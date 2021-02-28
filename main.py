@@ -15,8 +15,14 @@ errorCode = [
 
 @app.route('/hello')
 def miaozi_hello():
-    return '年轻人恭喜你发现这个彩蛋，喵子是最可爱的人，不是么？'
+    miaozi = "年轻人恭喜你发现这个彩蛋，喵子是最可爱的人，不是么？"
+    return jsonify({
+        "Easter_eggs": miaozi
+    })
 
+@app.route('/test')
+def test_function(test):
+    pass
 
 
 if __name__ == '__main__':
