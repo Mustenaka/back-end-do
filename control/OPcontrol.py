@@ -92,6 +92,9 @@ class OPcontrol:
             }
         return dic
             
+    def get_Chapter(self):
+        dbTable = "chapters_info"
+        db =DBconnect.DBconnect.dbQuery()
 
 if __name__ == '__main__':
     op = OPcontrol()
