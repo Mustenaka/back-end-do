@@ -7,4 +7,4 @@ class OPcontrol:
     def __del__(self):
         pass
 
-    def READ
+    def 
