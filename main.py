@@ -8,6 +8,7 @@ from flask import escape
 
 import os
 import sys
+import json
 
 import models.DBconnect as DBconnect
 import models.testDB as testDB
@@ -51,7 +52,8 @@ successCode = [
     "0",
     "1",
     "2",
-    "3"
+    "3",
+    "4"
 ]
 
 # 成功详细信息
@@ -59,12 +61,19 @@ successCodeinfo = [
     "success login",
     "success log out",
     "success register new account",
-    "You are already login in."
+    "You are already login in.",
+    "success get chapter"
 ]
+
+# 根目录，还没有想好放什么
+@app.route('/')
+def index():
+    # 首页
+    return "hello world"
 
 # 检查登陆状态
 @app.route('/checklogin', methods=['GET', 'POST'])
-def index():
+def checklogin():
     if 'user_id' in session:
         return jsonify({
             "success": successCode[3],
@@ -192,42 +201,32 @@ def Register_():
             "error_info": errorCodeinfo[0]
         })
 
-# 获取章节
+# 获取章节 
 @app.route('/getChapter', methods=['GET', 'POST'])
 def get_Chapter():
-    if request.method == 'POST':
-        try:
-            # 登出主要是为了删除session
-            user_wx_id = str(request.json.get('user_wx_id'))
-            op = OPcontrol.OPcontrol()
-            retrunDic = op.register(user_wx_id)
-            if retrunDic['returnCode'] == "a0":
-                return jsonify({
-                        "user_id": retrunDic['user_id'],
-                        "user_name":retrunDic['user_name'],
-                        "user_pwd":retrunDic['user_pwd'],
-                        "user_wx_id":retrunDic['user_wx_id'],
-                        "user_accuracy":retrunDic['user_accuracy'],
-                        "success": successCode[2],
-                        "success_info": successCodeinfo[2]
-                    })
-            elif retrunDic['returnCode'] == "r0":
-                return jsonify({
-                        "error": errorCode[3],
-                        "error_info": errorCodeinfo[3]
-                    })
-        except:
+    # GET请求 和 POST请求都可以
+    try:
+        # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
+        user = session.get('user_id')
+        if not user:
             return jsonify({
-                "error": errorCode[1],
-                "error_info": errorCodeinfo[1]
+                "error": errorCode[4],
+                "error_info": errorCodeinfo[4]
             })
-    else:
+        op = OPcontrol.OPcontrol()
+        get_dic = op.get_Chapter()
+        get_dic.setdefault("success", successCode[4])
+        get_dic.setdefault("success_info", successCodeinfo[4])
+        print(get_dic)
+        return jsonify(get_dic)
+        #return jsonify(json.dumps(get_dic,f, indent = 4, separators = (',', ': ')))
+    except:
         return jsonify({
-            "error": errorCode[0],
-            "error_info": errorCodeinfo[0]
+            "error": errorCode[1],
+            "error_info": errorCodeinfo[1]
         })
 
-# 获取题目
+# 根据章节获取题目
 @app.route('/getQuestion', methods=['GET', 'POST'])
 def get_Question(test):
     pass

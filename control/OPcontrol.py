@@ -92,11 +92,26 @@ class OPcontrol:
             }
         return dic
             
+    # 获取章节信息，返回一个字典
+    # 固定设置的就是四个大模块《数据结构》，《操作系统》，《计算机组成原理》，《计算机网络》
     def get_Chapter(self):
         dbTable = "chapters_info"
-        db =DBconnect.DBconnect.dbQuery()
+        db = DBconnect.DBconnect()
+        info = db.dbQuery(dbTable)
+        dic = { }
+        for i in range(0,len(info)):
+            pageNumber = "p" + str(i)
+            dic_tmp = {
+                "chapter_no":info[i][0],    # 章节编号
+                "chapter_from":info[i][1],  # 属于哪本书的编号
+                "chapter_info":info[i][2]   # 该章节中文名称
+            }
+            print(pageNumber)
+            dic.setdefault(pageNumber,dic_tmp)
+        return dic
+        
 
 if __name__ == '__main__':
     op = OPcontrol()
-    k = op.register("momotou5")
+    k = op.get_Chapter()
     print(k)

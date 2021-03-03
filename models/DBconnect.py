@@ -18,8 +18,12 @@ class DBconnect:
         cur = self.cur
         sql = "SELECT * FROM "+dbTable
         cur.execute(sql)
+        returnList = []
         for r in cur:
-            print(r)
+            returnList.append(r)
+            #print(r)
+        return returnList
+         
     
     # 用户登陆判断查询
     def dbQuery_userLogin(self,user_id,user_pwd):
