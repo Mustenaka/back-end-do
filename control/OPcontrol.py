@@ -24,9 +24,10 @@ class OPcontrol:
         db = DBconnect.DBconnect()
         info = db.dbQuery_userLogin(user_id,user_pwd)
         if info == None:
-            dic = {"error":"A0"}
+            dic = {"returnCode":"r0"}
         else:
             dic = {
+                "returnCode":"a0",
                 "user_id":info[0],
                 "user_name":info[1],
                 "user_wx_id":info[3],
@@ -39,4 +40,4 @@ class OPcontrol:
 
 if __name__ == '__main__':
     op = OPcontrol()
-    op.check_login("1001","1231234","momotou1")
+    op.check_login("1001","123123","momotou1")

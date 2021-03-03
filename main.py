@@ -1,23 +1,38 @@
-import datetime
-
-from flask import Flask, request, jsonify
+from flask import Flask
+from flask import request
+from flask import jsonify
+from flask import session
+from flask import redirect
+from flask import url_for
+from flask import escape
 
 import models.DBconnect as DBconnect
 import models.testDB as testDB
+
 import control.OPcontrol as OPcontrol
+from control.Msession import MySessionInterface
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
 
+# session 判断登陆状态有关
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+app.session_interface = MySessionInterface()
+
+session.permanent = True
+app.permanent_session_lifetime = timedelta(minutes = 1) 
+
 # 错误报错内部传递参数，作为响应数组
 errorCode = [
     "0",
-    "1"
+    "1",
+    "2",
 ]
 # 详细错误信息
 errorCodeinfo = [
     "You should use POST",
     "Can not login in, Please recheck the information",
+    "Wrong password or something else",
 ]
 
 # 成功代码
@@ -32,9 +47,10 @@ successCodeinfo = [
 
 # home page is nothing.
 @app.route('/')
-def home_page():
-    pass
-
+def index():
+    if 'user_id' in session:
+        return 'Logged in as %s' % escape(session['username'])
+    return 'You are not logged in'
 
 
 # 彩蛋
@@ -56,11 +72,27 @@ def Login_(test):
             user_id = str(request.json.get('user_id'))
             user_pwd = str(request.json.get('user_pwd'))
             user_wx_id = str(request.json.get('user_wx_id'))
-            # 登陆验证
-            return jsonify({
-                "success": successCode[0],
-                "success_info": successCodeinfo[0]
-            })
+            # 验证账户密码正确性
+            op = OPcontrol.OPcontrol()
+            retrunDic = op.check_login(user_id,user_pwd,user_wx_id)
+            # 判断登陆是否成功 - r0 登陆失败 , a0 登陆成功 
+            if retrunDic['returnCode'] == "r0":
+                # 登陆失败，抛出错误代码
+                return jsonify({
+                    "error": errorCode[2],
+                    "error_info": errorCodeinfo[2]
+                })
+            elif retrunDic['returnCode'] == "a0":
+                # 登陆成功 - 添加进入session
+                session["user_id"] = user_id
+                # 返回正确代码和信息
+                return jsonify({
+                    "user_id": user_id,
+                    "user_pwd":user_pwd,
+                    "user_wx_id":user_wx_id,
+                    "success": successCode[0],
+                    "success_info": successCodeinfo[0]
+                })
         except:
             return jsonify({
                 "error": errorCode[1],
