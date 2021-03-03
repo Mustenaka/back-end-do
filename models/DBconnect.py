@@ -21,11 +21,31 @@ class DBconnect:
         for r in cur:
             print(r)
     
+    # 用户登陆判断查询
     def dbQuery_userLogin(self,user_id,user_pwd):
         conn = self.conn
         cur = self.cur
         dbTable = "user_info"
         sql  = "SELECT * FROM "+dbTable+" WHERE userId='"+user_id+"' and userPwd='"+user_pwd+"'"
+        print(sql)
+        try:
+            cur.execute(sql)
+            conn.commit()
+        except Exception as e:
+            print("操作异常：%s"%str(e))
+            #错误回滚
+            conn.rollback()
+            return e
+        # 返回第一个合适的信息 - 也只有一个合适的信息
+        for r in cur:
+            return r
+
+    # 用户是否存在查询
+    def dbQuery_user_is_already(self,user_id):
+        conn = self.conn
+        cur = self.cur
+        dbTable = "user_info"
+        sql  = "SELECT * FROM "+dbTable+" WHERE userId='"+user_id+"'"
         print(sql)
         try:
             cur.execute(sql)
@@ -60,13 +80,14 @@ class DBconnect:
     # 测试插入代码 - 完成
     # 封装 - 特殊情况特殊判断 - 时间参数待处理
     # dbTable 表名称 - 插入参数
-    def dbInsert(self,dbTable,args):
+    def dbInsert(self,dbTable,*args):
         conn = self.conn
         cur = self.cur
 
         # python没有switch，本身switch需要哈希比较的，这和Python倡导的灵活性相互驳斥，反而会退化到IF-ELIF-ELSE级别
         # 所以就用if-elif-else进行特判表对应的sql语句
         sql = ""
+        print(args)
         if dbTable == "user_info":
             sql = "INSERT INTO "+dbTable+" VALUES(%s,%s,%s,%s,%s);"
         elif dbTable == "titlenumber_info":
@@ -97,6 +118,8 @@ class DBconnect:
             print("操作异常：%s"%str(e))
             #错误回滚
             conn.rollback()
+            return False
+        return True
 
     # 测试更新、修改代码 - 完成
     # 封装更新，修改代码 - 完成
@@ -130,5 +153,5 @@ if __name__ == '__main__':
     chooseTable = "user_info"
     inputDataTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(inputDataTime)
-    print(db.dbQuery_userLogin("1001","123123"))
+    print(db.dbQuery(chooseTable))
     #db.dbQuery(chooseTable)

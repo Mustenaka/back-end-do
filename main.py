@@ -20,7 +20,8 @@ app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 app.session_interface = MySessionInterface()
 
 session.permanent = True
-app.permanent_session_lifetime = timedelta(minutes = 1) 
+# session 删除时间 15 mins
+app.permanent_session_lifetime = timedelta(minutes = 15) 
 
 # 错误报错内部传递参数，作为响应数组
 errorCode = [
@@ -38,11 +39,13 @@ errorCodeinfo = [
 # 成功代码
 successCode = [
     "0",
+    "1",
 ]
 
 # 成功详细信息
 successCodeinfo = [
     "success login",
+    "success log out"
 ]
 
 # home page is nothing.
@@ -66,7 +69,7 @@ def miaozi_hello():
 # user_pwd - 用户登陆密码
 # user_wx_id - 用户微信pid
 @app.route('/Login', methods=['GET', 'POST'])
-def Login_(test):
+def Login_():
     if request.method == 'POST':
         try:
             user_id = str(request.json.get('user_id'))
@@ -88,7 +91,6 @@ def Login_(test):
                 # 返回正确代码和信息
                 return jsonify({
                     "user_id": user_id,
-                    "user_pwd":user_pwd,
                     "user_wx_id":user_wx_id,
                     "success": successCode[0],
                     "success_info": successCodeinfo[0]
@@ -104,10 +106,32 @@ def Login_(test):
             "error_info": errorCodeinfo[0]
         })
 
+# 登出
+# user_id - 用户登陆ID
+@app.route('/Logout', methods=['GET', 'POST'])
+def Logout_():
+    if request.method == 'POST':
+        try:
+            # 登出主要是为了删除session
+            user_id = str(request.json.get('user_id'))
+            del session["user_id"]
+            return jsonify({
+                    "user_id": user_id,
+                    "user_wx_id":user_wx_id,
+                    "success": successCode[1],
+                    "success_info": successCodeinfo[1]
+                })
+    else:
+        return jsonify({
+            "error": errorCode[0]
+            "error_info": errorCodeinfo[0]
+        })
+
+
 # 注册
 @app.route('/register', methods=['GET', 'POST'])
-def Register_(test):
-    pass
+def Register_():
+    
 
 # 获取章节
 @app.route('/getChapter', methods=['GET', 'POST'])
