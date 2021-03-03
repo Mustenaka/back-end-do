@@ -3,6 +3,7 @@ import datetime
 from flask import Flask, request, jsonify
 
 import models.DBconnect as DBconnect
+import models.testDB as testDB
 import control.OPcontrol as OPcontrol
 
 app = Flask(__name__)
@@ -100,4 +101,5 @@ def get_PersonalSignin(test):
 
 if __name__ == '__main__':
     # 启动Flask服务
-    app.run(debug=False, host='127.0.0.1', port=5000)
+    app.run(debug=False, host='127.0.0.1', port=5000)  # 内部测试
+    # app.run(debug=False, host='0.0.0.0', port=5000)  # 外部访问

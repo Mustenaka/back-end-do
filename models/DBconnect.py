@@ -20,6 +20,25 @@ class DBconnect:
         cur.execute(sql)
         for r in cur:
             print(r)
+    
+    def dbQuery_userLogin(self,user_id,user_pwd):
+        conn = self.conn
+        cur = self.cur
+        dbTable = "user_info"
+        sql  = "SELECT * FROM "+dbTable+" WHERE userId='"+user_id+"' and userPwd='"+user_pwd+"'"
+        print(sql)
+        try:
+            cur.execute(sql)
+            conn.commit()
+        except Exception as e:
+            print("操作异常：%s"%str(e))
+            #错误回滚
+            conn.rollback()
+            return e
+        # 返回第一个合适的信息 - 也只有一个合适的信息
+        for r in cur:
+            return r
+
 
     # 测试删除代码 - 完成
     # 封装删除代码 - 完成
@@ -111,5 +130,5 @@ if __name__ == '__main__':
     chooseTable = "user_info"
     inputDataTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(inputDataTime)
-    db.dbUpdate_signled(chooseTable,"userPwd","HHMILOVEU","userId","111")
-    db.dbQuery(chooseTable)
+    print(db.dbQuery_userLogin("1001","123123"))
+    #db.dbQuery(chooseTable)
