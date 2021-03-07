@@ -104,9 +104,9 @@ class OPcontrol:
             #题目编号我不希望从0开始
             pageNumber = "c" + str(i+1) 
             dic_tmp = {
-                "chapter_id":info[i][0],    # 章节编号
+                "chapters_id":info[i][0],    # 章节编号
                 "subject_id":info[i][1],  # 属于哪本书的编号
-                "chapter_name":info[i][2]   # 该章节中文名称
+                "chapters_name":info[i][2]   # 该章节中文名称
             }
             dic.setdefault(pageNumber,dic_tmp)
         return dic
