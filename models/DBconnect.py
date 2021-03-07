@@ -14,6 +14,7 @@ class DBconnect:
     # 测试查询代码 - 完成
     # 封装查询代码 - 完成
     # dbTable需要查询的表名称
+    # 输入表名字，直接查询表中全部内容
     def dbQuery(self,dbTable):
         cur = self.cur
         sql = "SELECT * FROM "+dbTable
@@ -23,7 +24,36 @@ class DBconnect:
             returnList.append(r)
             #print(r)
         return returnList
-         
+        
+    # -这几个特殊查询可以合并，但是可能要做很多参数传入，就偷了个懒-
+
+    # 特殊查询 -
+    # 根据 subject 编号查询该编号下的 chapter 信息
+    def dbQuery_chapter_according_to_subject(self,sub_id):
+        cur = self.cur
+        dbTable = "chapters_info"
+        sql = "SELECT * FROM "+dbTable +" WHERE subjectId='"+sub_id+"'"
+        #print(sql)
+        cur.execute(sql)
+        returnList = []
+        for r in cur:
+            returnList.append(r)
+            #print(r)
+        return returnList
+    
+    # 特殊查询 - 
+    # 根据 chapter 编号查询该编号下的 title 信息
+    def dbQuery_title_according_to_chapter(self,chp_id):
+        cur = self.cur
+        dbTable = "titlenumber_info"
+        sql = "SELECT * FROM "+dbTable +" WHERE chaptersId='"+chp_id+"'"
+        print(sql)
+        cur.execute(sql)
+        returnList = []
+        for r in cur:
+            returnList.append(r)
+        return returnList
+
     
     # 用户登陆判断查询
     def dbQuery_userLogin(self,user_id,user_pwd):

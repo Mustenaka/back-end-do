@@ -92,26 +92,74 @@ class OPcontrol:
             }
         return dic
             
+            
     # 获取章节信息，返回一个字典
     # 固定设置的就是四个大模块《数据结构》，《操作系统》，《计算机组成原理》，《计算机网络》
-    def get_Chapter(self):
+    def get_chapter_all(self):
         dbTable = "chapters_info"
         db = DBconnect.DBconnect()
         info = db.dbQuery(dbTable)
         dic = { }
         for i in range(0,len(info)):
-            pageNumber = "p" + str(i)
+            #题目编号我不希望从0开始
+            pageNumber = "c" + str(i+1) 
             dic_tmp = {
-                "chapter_no":info[i][0],    # 章节编号
-                "chapter_from":info[i][1],  # 属于哪本书的编号
-                "chapter_info":info[i][2]   # 该章节中文名称
+                "chapter_id":info[i][0],    # 章节编号
+                "subject_id":info[i][1],  # 属于哪本书的编号
+                "chapter_name":info[i][2]   # 该章节中文名称
             }
-            print(pageNumber)
             dic.setdefault(pageNumber,dic_tmp)
         return dic
         
+    # 获取书本信息
+    def get_subject(self):
+        dbTable = "subject_info"
+        db = DBconnect.DBconnect()
+        info = db.dbQuery(dbTable)
+        dic = { }
+        for i in range(0,len(info)):
+            pageNumber = "s" + str(i+1)
+            dic_tmp = {
+                "subject_id":info[i][0],    # 书本<科目>编号
+                "subject_name":info[i][1],  # 书本<科目>名称
+                "subject_brief":info[i][2]   # 书本<科目>介绍
+            }
+            dic.setdefault(pageNumber,dic_tmp)
+        return dic
+
+    # 根据科目获取当前章节信息表
+    def get_chapter(self,sub_id):
+        dbTable = "chapters_info"
+        db = DBconnect.DBconnect()
+        info = db.dbQuery_chapter_according_to_subject(str(sub_id))
+        dic = { }
+        for i in range(0,len(info)):
+            pageNumber = "c" + str(i+1)
+            dic_tmp = {
+                "chapters_id":info[i][0],    # 章节编号
+                "subject_id":info[i][1],    # 属于哪本书的编号
+                "chapters_name":info[i][2]   # 该章节中文名称
+            }
+            dic.setdefault(pageNumber,dic_tmp)
+        return dic
+
+    # 根据章节表获取标题
+    def get_title(self,chp_id):
+        dbTable = "titlenumber_info"
+        db = DBconnect.DBconnect()
+        info = db.dbQuery_title_according_to_chapter(str(chp_id))
+        dic = { }
+        for i in range(0,len(info)):
+            pageNumber = "t" + str(i+1)
+            dic_tmp = {
+                "title_id":info[i][0],    # 章节编号
+                "chapters_id":info[i][1],  # 属于哪本书的编号
+            }
+            dic.setdefault(pageNumber,dic_tmp)
+        return dic
+
 
 if __name__ == '__main__':
     op = OPcontrol()
-    k = op.get_Chapter()
+    k = op.get_title("2")
     print(k)
