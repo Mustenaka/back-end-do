@@ -53,7 +53,28 @@ class DBconnect:
         for r in cur:
             returnList.append(r)
         return returnList
+    
+    # 特殊查询 - 
+    # 根据 title 编号查询该编号下的 title 的详细信息
+    def dbQuery_title_according_to_title(self,tit_id):
+        cur = self.cur
+        dbTable = "title_info"
+        sql = "SELECT * FROM "+dbTable +" WHERE titleId='"+tit_id+"'"
+        print(sql)
+        cur.execute(sql)
+        returnList = []
+        for r in cur:
+            returnList.append(r)
+        return returnList
 
+    # 查询长度
+    def dbQuery_title_len(self,dbTable):
+        cur = self.cur
+        sql = "select  count(*) from `"+dbTable+"`"
+        print(sql)
+        cur.execute(sql)
+        for r in cur:
+            return r[0]
     
     # 用户登陆判断查询
     def dbQuery_userLogin(self,user_id,user_pwd):
@@ -184,8 +205,8 @@ class DBconnect:
 if __name__ == '__main__':
     db = DBconnect()
 
-    chooseTable = "user_info"
+    chooseTable = "title_info"
     inputDataTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(inputDataTime)
-    print(db.dbQuery(chooseTable))
+    print(db.dbQuery_title_len(chooseTable))
     #db.dbQuery(chooseTable)

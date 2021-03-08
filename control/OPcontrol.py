@@ -158,8 +158,46 @@ class OPcontrol:
             dic.setdefault(pageNumber,dic_tmp)
         return dic
 
+    # 根据题目获得详细信息
+    # 说明
+    #   title_id:   输入的titleid  
+    #   titleHead:   题目的标题
+    #   titleCont:  题目的内容
+    #   titleAnswer:    题目的答案（选择填空混合）
+    #   titleAnalysis:  题目的解析
+    #   titleAveracc:   题目的平均正确率
+    #   titlespaper:    题目来自的试卷
+    #   specialNote:    特殊注解（一般没有为None）
+
+    def get_title_info(self,tit_id):
+        dbTable = "title_info"
+        db = DBconnect.DBconnect()
+        info = db.dbQuery_title_according_to_title(str(tit_id))
+        dic = { }
+        for i in range(0,len(info)):
+            pageNumber = "t" + str(i+1)
+            dic_tmp = {
+                "title_id":info[i][0],    
+                "titleHead":info[i][1],  
+                "titleCont":info[i][2], 
+                "titleAnswer":info[i][3],
+                "titleAnalysis":info[i][4],
+                "titleAveracc":info[i][5],
+                "titlespaper":info[i][6],
+                "specialNote":info[i][7],
+            }
+            dic.setdefault(pageNumber,dic_tmp)
+        return dic
+    
+    # 获取长度
+    def get_title_len(self):
+        dbTable = "title_info"
+        db = DBconnect.DBconnect()
+        info = db.dbQuery_title_len(dbTable)
+        return info
+
 
 if __name__ == '__main__':
     op = OPcontrol()
-    k = op.get_title("2")
+    k = op.get_title_len()
     print(k)

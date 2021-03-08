@@ -9,6 +9,7 @@ from flask import escape
 import os
 import sys
 import json
+import random
 
 import models.DBconnect as DBconnect
 import models.testDB as testDB
@@ -260,6 +261,14 @@ def get_subject():
 def get_chapters_from_sub():
     if request.method == 'POST':
         try:
+            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
+            user = session.get('user_id')
+            if not user:
+                return jsonify({
+                    "error": errorCode[4],
+                    "error_info": errorCodeinfo[4]
+                })
+            # 输入筛查
             chp_id = str(request.json.get('subject_id'))
             # 验证账户密码正确性
             op = OPcontrol.OPcontrol()
@@ -286,6 +295,14 @@ def get_chapters_from_sub():
 def get_title_from_chp():
     if request.method == 'POST':
         try:
+            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
+            user = session.get('user_id')
+            if not user:
+                return jsonify({
+                    "error": errorCode[4],
+                    "error_info": errorCodeinfo[4]
+                })
+            # 输入筛查
             chp_id = str(request.json.get('chapters_id'))
             # 验证账户密码正确性
             op = OPcontrol.OPcontrol()
@@ -307,12 +324,84 @@ def get_title_from_chp():
 
 
 
-# 获取个人信息
-@app.route('/getPersonalInfo', methods=['GET', 'POST'])
-def get_PersonalInfo(test):
-    pass
+# 获取题目详细信息
+# 说明
+#   title_id:   输入的titleid  
+#   titleHead:   题目的标题
+#   titleCont:  题目的内容
+#   titleAnswer:    题目的答案（选择填空混合）
+#   titleAnalysis:  题目的解析
+#   titleAveracc:   题目的平均正确率
+#   titlespaper:    题目来自的试卷
+#   specialNote:    特殊注解（一般没有为None）
+@app.route('/gettitleinfo', methods=['GET', 'POST'])
+def get_titleInfo():
+    if request.method == 'POST':
+        try:
+            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
+            user = session.get('user_id')
+            if not user:
+                return jsonify({
+                    "error": errorCode[4],
+                    "error_info": errorCodeinfo[4]
+                })
+            # 输入筛查
+            tit_id = str(request.json.get('title_id'))
+            # 验证账户密码正确性
+            op = OPcontrol.OPcontrol()
+            get_dic = op.get_title_info(tit_id)
+            get_dic.setdefault("success", successCode[6])
+            get_dic.setdefault("success_info", successCodeinfo[6])
+            print(get_dic)
+            return jsonify(get_dic)
+        except:
+            return jsonify({
+                "error": errorCode[1],
+                "error_info": errorCodeinfo[1]
+            })
+    else:
+        return jsonify({
+            "error": errorCode[0],
+            "error_info": errorCodeinfo[0]
+        })
+
+# 同上，随机获取题目信息
+@app.route('/getrandomtitleinfo', methods=['GET', 'POST'])
+def get_randomTitleInfo():
+    if request.method == 'POST':
+        try:
+            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
+            user = session.get('user_id')
+            if not user:
+                return jsonify({
+                    "error": errorCode[4],
+                    "error_info": errorCodeinfo[4]
+                })
+
+            # 验证账户密码正确性 - 先获取长度，再随机生成
+            op = OPcontrol.OPcontrol()
+            table_length = op.get_title_len()
+            tit_id = random.randint(1,table_length-1)
+
+            get_dic = op.get_title_info(str(tit_id))
+            get_dic.setdefault("success", successCode[6])
+            get_dic.setdefault("success_info", successCodeinfo[6])
+            print(get_dic)
+            return jsonify(get_dic)
+        except:
+            return jsonify({
+                "error": errorCode[1],
+                "error_info": errorCodeinfo[1]
+            })
+    else:
+        return jsonify({
+            "error": errorCode[0],
+            "error_info": errorCodeinfo[0]
+        })
+
 
 # 获取个人签到信息
+# 待补充
 @app.route('/getPersonalSignin', methods=['GET', 'POST'])
 def get_PersonalSignin(test):
     pass
