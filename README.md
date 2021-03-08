@@ -290,3 +290,50 @@ success_info：”success get chapter“
 
 ------
 
+获取题目详细信息：http://127.0.0.1:5000/gettitleinfo
+
+说明：输入需要访问的章节编号title_id，返回相应的题目编号的题目详细内容，返回值主要的解释为：\#  title_id:  输入的titleid 
+
+- titleHead:  题目的标题
+- titleCont: 题目的内容
+- titleAnswer:  题目的答案（选择填空混合）
+- titleAnalysis: 题目的解析
+- titleAveracc:  题目的平均正确率
+- titlespaper:  题目来自的试卷
+- specialNote:  特殊注解（一般没有为None）
+
+方法：POST
+
+输入json
+
+```json
+"title_id": 1   #输入需要查询的title_id，title_id可以由API：gettitlefromchp获取
+```
+
+正常返回：
+
+```json
+{
+    't1': {
+        'title_id': '2', 
+        'titleHead': '填空题',
+        'titleCont': '导弹系统是属于_______系统', 
+        'titleAnswer': '硬时系统', 
+        'titleAnalysis': '这是一个解析', 
+        'titleAveracc': '89', 
+        'titlespaper': 2017, 
+        'specialNote': None
+    }, 
+ 	'success': '6', 
+    'success_info': 'success get title'
+}
+```
+
+错误返回 - 会有错误代码 和 错误代码解释，主要错误来自于不登陆访问该接口
+
+------
+
+随机获取题目详细信息：http://127.0.0.1:5000/gettitleinfo
+
+说明：无需输入，直接获取一道题目（有可能是已经做过的题目），同时返回相应的题目编号的题目详细内容，内容完全同上一条API介绍
+
