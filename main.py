@@ -307,11 +307,6 @@ def get_title_from_chp():
 
 
 
-# 根据章节获取题目
-@app.route('/getQuestion', methods=['GET', 'POST'])
-def get_Question(page_number):
-    pass
-
 # 获取个人信息
 @app.route('/getPersonalInfo', methods=['GET', 'POST'])
 def get_PersonalInfo(test):

@@ -1,34 +1,30 @@
 # back-end-do
 
-这是一个我家可爱的喵子做的后端计算机复习题小程序的后端，
+这是一个我家可爱的喵子做的后端计算机复习题小程序的后端，Python3.5以上版本均可以使用（自己用3.7在公司测试用3.8都可以）
 
 ~~采用我也不知道什么的架构（雾）~~
 
 主要分为【数据库操作】【控制层】【API接口】三大部分
 
-[TOC]
-
 如何使用本项目：
 
-1.
+1. 首先安装第三方库pip install -r requirements.txt 
+2. 导入sql文件（数据库使用mysql）
+3. python main.py运行（如果是Linux服务器需要使用nohup在后台启动程序）
 
-2.
-
-3.
-
-所需第三方库：
-
-直接输入 pip install -r requirements.txt 批量安装第三方库即可
+项目介绍如下：
 
 #### 一.数据库层
 
 文件夹 models/下
 
-已完成，主要是 连接 + 增删改查等基本功能
+已完成，主要是 连接 + 增删改查等基本功能，返回值，返回list给OPcontrol.py
 
 #### 二.控制层
 
-文件夹 control/下主要是OPcontrol.py文件
+文件夹 control/下主要是OPcontrol.py文件，用来接受数据库层信息并且处理交给API接口模块
+
+接受DBconnect.py传递进来的数据，经过处理，错误排除，返回给API模块，
 
 #### 三.API接口
 
