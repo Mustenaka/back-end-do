@@ -337,3 +337,34 @@ success_info：”success get chapter“
 
 说明：无需输入，直接获取一道题目（有可能是已经做过的题目），同时返回相应的题目编号的题目详细内容，内容完全同上一条API介绍
 
+------
+
+提交题目回答：http://127.0.0.1:5000/submitanswer
+
+说明：输入一个题目的回答，会返回正确与否，将会在后台多个表中记录数据，以便后台访问
+
+方法：POST
+
+输入json
+
+分别是title_id所需要提交题目的ID号，user_id所需要提交题目的用户，answer用户的回答（直接匹配字符串，ABCD，或者填空题答案），user_note用户自己的笔记
+
+```json
+{
+    "title_id": string，
+    "user_id": string，
+    "answer": string，
+    "user_note": string
+}
+```
+
+正常返回，有两种，分别是回答正确返回代码 8，回答错误返回代码 7 ：
+
+```json
+{
+	"success": successCode,
+    "success_info": successCodeinfo,
+}
+```
+
+错误返回 - 会有错误代码 和 错误代码解释，主要错误来自于不登陆访问该接口
