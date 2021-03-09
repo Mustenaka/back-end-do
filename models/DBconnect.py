@@ -7,6 +7,12 @@ class DBconnect:
             self.conn = pymysql.connect(
                 host='159.75.72.254',port=3306, user='root', passwd="HHM135#", db='HHM'
                 )
+            '''
+            # 本地数据库连接地址
+            self.conn = pymysql.connect(
+                host='127.0.0.1',port=3306, user='root', passwd="HHM135#", db='HHM'
+                )
+            '''
             self.cur = self.conn.cursor()
         except e:
             print(e)
@@ -144,7 +150,7 @@ class DBconnect:
         sql = ""
         print(args)
         if dbTable == "user_info":
-            sql = "INSERT INTO "+dbTable+" VALUES(%s,%s,%s,%s,%s);"
+            sql = "INSERT INTO "+dbTable+" VALUES(%s,%s,%s,%s,%s,%s);"
         elif dbTable == "titlenumber_info":
             sql = "INSERT INTO "+dbTable+" VALUES(%s,%s);"
         elif dbTable == "titlenote_info":
@@ -176,6 +182,24 @@ class DBconnect:
             return False
         return True
 
+    # 传入是否正确，以及user_id
+    def dbUpdate_user_answer(self,isRight,user_id):
+        conn = self.conn
+        cur = self.cur
+        if isRight:
+            sql = "update HHM.user_info set userRightAnswer=userRightAnswer+1 where userId='"+user_id+"'"
+        else:
+            sql = "update HHM.user_info set userWrongAnswer=userRightAnswer+1 where userId='"+user_id+"'"
+        print(sql)
+        try:
+            cur.execute(sql)
+            conn.commit()
+        except Exception as e:
+            print("操作异常：%s"%str(e))
+            #错误回滚
+            conn.rollback()
+
+
     # 测试更新、修改代码 - 完成
     # 封装更新，修改代码 - 完成
     # dbTable 表名称 -  needValue 需要修改的值名 - inputValue 需要修改的值 - needId 查询的ID名 - inputId 查询的ID具体内容
@@ -205,8 +229,9 @@ class DBconnect:
 if __name__ == '__main__':
     db = DBconnect()
 
-    chooseTable = "title_info"
+    chooseTable = "titlenote_info"
     inputDataTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    args = ("1008","1","1",inputDataTime,"")
+    db.dbInsert(chooseTable,"1018","1","1",inputDataTime,"","")
     print(inputDataTime)
-    print(db.dbQuery_title_len(chooseTable))
     #db.dbQuery(chooseTable)

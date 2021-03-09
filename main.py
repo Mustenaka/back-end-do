@@ -57,6 +57,8 @@ successCode = [
     "4",
     "5",
     "6",
+    "7",
+    "8"
 ]
 
 # 成功详细信息
@@ -68,6 +70,8 @@ successCodeinfo = [
     "success get subject",
     "success get chapter",
     "success get title",
+    "success, but answer is wrong",
+    "success, and answer is right"
 ]
 
 # 根目录，还没有想好放什么
@@ -186,7 +190,8 @@ def Register_():
                         "user_name":retrunDic['user_name'],
                         "user_pwd":retrunDic['user_pwd'],
                         "user_wx_id":retrunDic['user_wx_id'],
-                        "user_accuracy":retrunDic['user_accuracy'],
+                        "user_rightAnswer":retrunDic['user_rightAnswer'],
+                        "user_wrongAnswer":retrunDic['user_wrongAnswer'],
                         "success": successCode[2],
                         "success_info": successCodeinfo[2]
                     })
@@ -388,6 +393,50 @@ def get_randomTitleInfo():
             get_dic.setdefault("success_info", successCodeinfo[6])
             print(get_dic)
             return jsonify(get_dic)
+        except:
+            return jsonify({
+                "error": errorCode[1],
+                "error_info": errorCodeinfo[1]
+            })
+    else:
+        return jsonify({
+            "error": errorCode[0],
+            "error_info": errorCodeinfo[0]
+        })
+
+# 同上，随机获取题目信息
+# Submit answer
+@app.route('/submitanswer', methods=['GET', 'POST'])
+def submit_answer():
+    if request.method == 'POST':
+        try:
+            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
+            user = session.get('user_id')
+            if not user:
+                return jsonify({
+                    "error": errorCode[4],
+                    "error_info": errorCodeinfo[4]
+                })
+            # 输入筛查
+            tit_id = str(request.json.get('title_id'))
+            user_id = str(request.json.get('user_id'))
+            answer = str(request.json.get('answer'))
+            user_note = str(request.json.get('user_note'))
+            # 验证账户密码正确性 - 先获取长度，再随机生成
+            op = OPcontrol.OPcontrol()
+
+            isRight = op.answerCorrectJudgment(user_id,tit_id,answer,user_note)
+            #7 - wrong ; 8 - right
+            if isRight:
+                return jsonify({
+                    "success": successCode[8],
+                    "success_info": successCodeinfo[8],
+                })
+            else:
+                return jsonify({
+                    "success": successCode[7],
+                    "success_info": successCodeinfo[7],
+                })
         except:
             return jsonify({
                 "error": errorCode[1],

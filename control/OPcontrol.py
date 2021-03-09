@@ -3,6 +3,7 @@ import sys
 projectPath = os.path.abspath(os.path.join(os.getcwd()))
 sys.path.append(projectPath)
 
+import datetime
 import models.DBconnect as DBconnect
 import random
 
@@ -34,7 +35,8 @@ class OPcontrol:
                 "user_id":info[0],
                 "user_name":info[1],
                 "user_wx_id":info[3],
-                "user_accuracy":info[4]
+                "user_rightAnswer":info[4],
+                "user_wrongAnswer":info[5]
             }
         print(dic)
         return dic
@@ -72,11 +74,10 @@ class OPcontrol:
         # 插入数据库
         # userName 暂时和 userId 相同，这样只是为了让微信用户快速注册
         # userPwd 暂时设置为 123456
-        # 对于新用户而言 userAccuracy 为 0
+        # 对于新用户而言 已经回答的正确数 为 0，错误题目数也为0
         temp_pwd = "123456"
-        userAccuracy = "0"
-        args = (new_user_id,new_user_id,temp_pwd,user_wx_id,userAccuracy)
-        is_successful = db.dbInsert("user_info",new_user_id,new_user_id,temp_pwd,user_wx_id,userAccuracy)
+        args = (new_user_id,new_user_id,temp_pwd,user_wx_id,0,0)
+        is_successful = db.dbInsert("user_info",new_user_id,new_user_id,temp_pwd,user_wx_id,0,0)
         if is_successful:
             dic = {
                 "returnCode":"a0",
@@ -84,7 +85,8 @@ class OPcontrol:
                 "user_name":new_user_id,
                 "user_pwd":temp_pwd,
                 "user_wx_id":user_wx_id,
-                "user_accuracy":userAccuracy
+                "user_rightAnswer":"0",
+                "user_wrongAnswer":"0"
             }
         else:
             dic = {
@@ -189,15 +191,41 @@ class OPcontrol:
             dic.setdefault(pageNumber,dic_tmp)
         return dic
     
-    # 获取长度
+    # 获取数据库中题目数量
     def get_title_len(self):
         dbTable = "title_info"
         db = DBconnect.DBconnect()
         info = db.dbQuery_title_len(dbTable)
         return info
 
+    # 将发送过来的回答进行结果验证，并且将回答信息写入
+    def answerCorrectJudgment(self,user_id,tit_id,answer,user_note):
+        # 先提取题号对应的题目信息
+        # 再将输入的答案与实际答案进行对比
+        # 最后根据用户请求写入user_info表中生成总数据记录
+        # 再将数据写入titlenote_info表中做详细记录
+        # 最后返回True or False表示回答正确与否
+        dbTable = "titlenote_info"
+        db = DBconnect.DBconnect()
+        info = db.dbQuery_title_according_to_title(str(tit_id))
+        rightAnswer = info[0][3]
+        print(answer,rightAnswer)
+        isRight = False
+        inpRight = "0"
+        if str(answer) == str(rightAnswer):
+            isRight = True
+            inpRight = "1"
+        # 更新用户回答总信息
+        db.dbUpdate_user_answer(isRight,user_id)
+        # 更新用户回答详细内容 - 记录题号和回答时间
+        inputDataTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        db.dbInsert(dbTable,user_id,tit_id,inpRight,inputDataTime,user_note)
+        return isRight
+        
+
+
 
 if __name__ == '__main__':
     op = OPcontrol()
-    k = op.get_title_len()
+    k = op.answerCorrectJudgment("1001","2","硬时系统","这一道题记录点信息")
     print(k)
