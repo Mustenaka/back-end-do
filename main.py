@@ -459,5 +459,5 @@ def get_PersonalSignin(test):
 
 if __name__ == '__main__':
     # 启动Flask服务
-    app.run(debug=False, host='127.0.0.1', port=5000)  # 内部测试
-    # app.run(debug=False, host='0.0.0.0', port=5000)  # 外部访问
+    app.run(debug=True, host='127.0.0.1', port=5000)  # 内部测试
+    # app.run(debug=False, host='0.0.0.0', port=80)  # 外部访问
