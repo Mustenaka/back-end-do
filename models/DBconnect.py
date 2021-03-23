@@ -164,13 +164,13 @@ class DBconnect:
         elif dbTable == "subject_info":
             sql = "INSERT INTO "+dbTable+" VALUES(%s,%s,%s);"
         elif dbTable == "load_info":
-            sql = "INSERT INTO "+dbTable+" VALUES(%s,%s);"
-        elif dbTable == "load_info":
+            sql = "INSERT INTO "+dbTable+" VALUES('{0}','{1}','{2}');".format(*args)
+        elif dbTable == "chapters_info":
             sql = "INSERT INTO "+dbTable+" VALUES(%s,%s,%s);"
 
         print(sql)
         try:
-            if dbTable == "titlenote_info": 
+            if dbTable == "titlenote_info" or dbTable == "load_info" : 
                 cur.execute(sql)
             else:
                 cur.execute(sql,args)
@@ -182,14 +182,14 @@ class DBconnect:
             return False
         return True
 
-    # 传入是否正确，以及user_id
+    # 传入【是否正确】，以及【user_id】更新用户的做题信息
     def dbUpdate_user_answer(self,isRight,user_id):
         conn = self.conn
         cur = self.cur
         if isRight:
             sql = "update HHM.user_info set userRightAnswer=userRightAnswer+1 where userId='"+user_id+"'"
         else:
-            sql = "update HHM.user_info set userWrongAnswer=userRightAnswer+1 where userId='"+user_id+"'"
+            sql = "update HHM.user_info set userWrongAnswer=userWrongAnswer+1 where userId='"+user_id+"'"
         print(sql)
         try:
             cur.execute(sql)
@@ -229,9 +229,9 @@ class DBconnect:
 if __name__ == '__main__':
     db = DBconnect()
 
-    chooseTable = "titlenote_info"
-    inputDataTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    args = ("1008","1","1",inputDataTime,"")
-    db.dbInsert(chooseTable,"1018","1","1",inputDataTime,"","")
+    chooseTable = "load_info"
+    inputDataTime = datetime.datetime.now().strftime("%Y-%m-%d")
+    args = ("1010","1",inputDataTime)
+    db.dbInsert(chooseTable,"1010","1",inputDataTime)
     print(inputDataTime)
     #db.dbQuery(chooseTable)

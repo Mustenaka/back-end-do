@@ -39,6 +39,7 @@ errorCode = [
     "3",
     "4",
 ]
+
 # 详细错误信息
 errorCodeinfo = [
     "You should use POST",
@@ -58,7 +59,8 @@ successCode = [
     "5",
     "6",
     "7",
-    "8"
+    "8",
+    "9"
 ]
 
 # 成功详细信息
@@ -71,7 +73,8 @@ successCodeinfo = [
     "success get chapter",
     "success get title",
     "success, but answer is wrong",
-    "success, and answer is right"
+    "success, and answer is right",
+    "success daily attendance"
 ]
 
 # 根目录，还没有想好放什么
@@ -422,7 +425,8 @@ def submit_answer():
             user_id = str(request.json.get('user_id'))
             answer = str(request.json.get('answer'))
             user_note = str(request.json.get('user_note'))
-            # 验证账户密码正确性 - 先获取长度，再随机生成
+            
+            # 调用answerCorrectJudgment获取正确与否
             op = OPcontrol.OPcontrol()
 
             isRight = op.answerCorrectJudgment(user_id,tit_id,answer,user_note)
