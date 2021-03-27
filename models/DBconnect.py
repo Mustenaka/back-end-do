@@ -235,3 +235,4 @@ if __name__ == '__main__':
     db.dbInsert(chooseTable,"1010","1",inputDataTime)
     print(inputDataTime)
     #db.dbQuery(chooseTable)
+    
