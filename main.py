@@ -455,7 +455,7 @@ def submit_answer():
 
 # 获取个人签到信息
 # 待补充
-@app.route('/getPersonalSignin', methods=['GET', 'POST'])
+@app.route('/getpersonalsignin', methods=['GET', 'POST'])
 def get_PersonalSignin(test):
     pass
 
