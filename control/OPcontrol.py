@@ -176,6 +176,7 @@ class OPcontrol:
         db = DBconnect.DBconnect()
         info = db.dbQuery_title_according_to_title(str(tit_id))
         dic = { }
+        '''
         for i in range(0,len(info)):
             pageNumber = "t" + str(i+1)
             dic_tmp = {
@@ -189,6 +190,15 @@ class OPcontrol:
                 "specialNote":info[i][7],
             }
             dic.setdefault(pageNumber,dic_tmp)
+        '''
+        dic.setdefault("title_id",info[0][0])
+        dic.setdefault("titleHead",info[0][1])
+        dic.setdefault("titleCont",info[0][2])
+        dic.setdefault("titleAnswer",info[0][3])
+        dic.setdefault("titleAnalysis",info[0][4])
+        dic.setdefault("titleAveracc",info[0][5])
+        dic.setdefault("titlespaper",info[0][6])
+        dic.setdefault("specialNote",info[0][7])
         return dic
     
     # 获取数据库中题目数量
