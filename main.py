@@ -15,6 +15,7 @@ import models.DBconnect as DBconnect
 import models.testDB as testDB
 
 import control.OPcontrol as OPcontrol
+import routes.config as config
 from control.Msession import MySessionInterface
 
 app = Flask(__name__)
@@ -31,52 +32,6 @@ session.permanent = True
 app.permanent_session_lifetime = timedelta(minutes = 15) 
 '''
 
-# 错误报错内部传递参数，作为响应数组
-errorCode = [
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
-]
-
-# 详细错误信息
-errorCodeinfo = [
-    "You should use POST",
-    "Can not get information, please recheck the input",
-    "Wrong password or something else",
-    "can not register new account, please recheck.",
-    "You are not login in"
-]
-
-# 成功代码
-successCode = [
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9"
-]
-
-# 成功详细信息
-successCodeinfo = [
-    "success login",
-    "success log out",
-    "success register new account",
-    "You are already login in.",
-    "success get subject",
-    "success get chapter",
-    "success get title",
-    "success, but answer is wrong",
-    "success, and answer is right",
-    "success daily attendance"
-]
-
 # 根目录，还没有想好放什么
 @app.route('/')
 def index():
@@ -88,15 +43,15 @@ def index():
 def checklogin():
     if 'user_id' in session:
         return jsonify({
-            "success": successCode[3],
-            "success_info": successCodeinfo[3],
+            "success": config.successCode[3],
+            "success_info": config.successCodeinfo[3],
             "info":'Logged in as %s' % escape(session['user_id'])
         })
         #return 'Logged in as %s' % escape(session['user_id'])
     #return 'You are not logged in'
     return jsonify({
-        "error": errorCode[4],
-        "error_info": errorCodeinfo[4]
+        "error": config.errorCode[4],
+        "error_info": config.errorCodeinfo[4]
     })
 
 
@@ -126,8 +81,8 @@ def Login_():
             if retrunDic['returnCode'] == "r0":
                 # 登陆失败，抛出错误代码
                 return jsonify({
-                    "error": errorCode[2],
-                    "error_info": errorCodeinfo[2]
+                    "error": config.errorCode[2],
+                    "error_info": config.errorCodeinfo[2]
                 })
             elif retrunDic['returnCode'] == "a0":
                 # 登陆成功 - 添加进入session
@@ -136,18 +91,18 @@ def Login_():
                 return jsonify({
                     "user_id": user_id,
                     "user_wx_id":user_wx_id,
-                    "success": successCode[0],
-                    "success_info": successCodeinfo[0]
+                    "success": config.successCode[0],
+                    "success_info": config.successCodeinfo[0]
                 })
         except:
             return jsonify({
-                "error": errorCode[1],
-                "error_info": errorCodeinfo[1]
+                "error": config.errorCode[1],
+                "error_info": config.errorCodeinfo[1]
             })
     else:
         return jsonify({
-            "error": errorCode[0],
-            "error_info": errorCodeinfo[0]
+            "error": config.errorCode[0],
+            "error_info": config.errorCodeinfo[0]
         })
 
 # 登出 - 直接关闭浏览器或者微信小程序断开连接也算登出了，session会自动清除的
@@ -163,18 +118,18 @@ def Logout_():
             #print(session.get('user_id'), session.pop('user_id', None))
             return jsonify({
                     "user_id": user_id,
-                    "success": successCode[1],
-                    "success_info": successCodeinfo[1]
+                    "success": config.successCode[1],
+                    "success_info": config.successCodeinfo[1]
                 })
         except:
             return jsonify({
-                "error": errorCode[1],
-                "error_info": errorCodeinfo[1]
+                "error": config.errorCode[1],
+                "error_info": config.errorCodeinfo[1]
             })
     else :
         return jsonify({
-            "error": errorCode[0],
-            "error_info": errorCodeinfo[0]
+            "error": config.errorCode[0],
+            "error_info": config.errorCodeinfo[0]
         })
 
 
@@ -195,23 +150,23 @@ def Register_():
                         "user_wx_id":retrunDic['user_wx_id'],
                         "user_rightAnswer":retrunDic['user_rightAnswer'],
                         "user_wrongAnswer":retrunDic['user_wrongAnswer'],
-                        "success": successCode[2],
-                        "success_info": successCodeinfo[2]
+                        "success": config.successCode[2],
+                        "success_info": config.successCodeinfo[2]
                     })
             elif retrunDic['returnCode'] == "r0":
                 return jsonify({
-                        "error": errorCode[3],
-                        "error_info": errorCodeinfo[3]
+                        "error": config.errorCode[3],
+                        "error_info": config.errorCodeinfo[3]
                     })
         except:
             return jsonify({
-                "error": errorCode[1],
-                "error_info": errorCodeinfo[1]
+                "error": config.errorCode[1],
+                "error_info": config.errorCodeinfo[1]
             })
     else:
         return jsonify({
-            "error": errorCode[0],
-            "error_info": errorCodeinfo[0]
+            "error": config.errorCode[0],
+            "error_info": config.errorCodeinfo[0]
         })
 
 # 获取全部章节信息（不常用API - 测试用） 
@@ -223,20 +178,20 @@ def get_chapter():
         user = session.get('user_id')
         if not user:
             return jsonify({
-                "error": errorCode[4],
-                "error_info": errorCodeinfo[4]
+                "error": config.errorCode[4],
+                "error_info": config.errorCodeinfo[4]
             })
         op = OPcontrol.OPcontrol()
         get_dic = op.get_chapter_all()
-        get_dic.setdefault("success", successCode[5])
-        get_dic.setdefault("success_info", successCodeinfo[5])
+        get_dic.setdefault("success", config.successCode[5])
+        get_dic.setdefault("success_info", config.successCodeinfo[5])
         print(get_dic)
         return jsonify(get_dic)
         #return jsonify(json.dumps(get_dic,f, indent = 4, separators = (',', ': ')))
     except:
         return jsonify({
-            "error": errorCode[1],
-            "error_info": errorCodeinfo[1]
+            "error": config.errorCode[1],
+            "error_info": config.errorCodeinfo[1]
         })
         
 # 获取全部书本（科目）信息 
@@ -248,19 +203,19 @@ def get_subject():
         user = session.get('user_id')
         if not user:
             return jsonify({
-                "error": errorCode[4],
-                "error_info": errorCodeinfo[4]
+                "error": config.errorCode[4],
+                "error_info": config.errorCodeinfo[4]
             })
         op = OPcontrol.OPcontrol()
         get_dic = op.get_subject()
-        get_dic.setdefault("success", successCode[4])
-        get_dic.setdefault("success_info", successCodeinfo[4])
+        get_dic.setdefault("success", config.successCode[4])
+        get_dic.setdefault("success_info", config.successCodeinfo[4])
         print(get_dic)
         return jsonify(get_dic)
     except:
         return jsonify({
-            "error": errorCode[1],
-            "error_info": errorCodeinfo[1]
+            "error": config.errorCode[1],
+            "error_info": config.errorCodeinfo[1]
         })
 
 # 查询章节信息 - 通过给定科目名称
@@ -273,27 +228,27 @@ def get_chapters_from_sub():
             user = session.get('user_id')
             if not user:
                 return jsonify({
-                    "error": errorCode[4],
-                    "error_info": errorCodeinfo[4]
+                    "error": config.errorCode[4],
+                    "error_info": config.errorCodeinfo[4]
                 })
             # 输入筛查
             chp_id = str(request.json.get('subject_id'))
             # 验证账户密码正确性
             op = OPcontrol.OPcontrol()
             get_dic = op.get_chapter(chp_id)
-            get_dic.setdefault("success", successCode[5])
-            get_dic.setdefault("success_info", successCodeinfo[5])
+            get_dic.setdefault("success", config.successCode[5])
+            get_dic.setdefault("success_info", config.successCodeinfo[5])
             print(get_dic)
             return jsonify(get_dic)
         except:
             return jsonify({
-                "error": errorCode[1],
-                "error_info": errorCodeinfo[1]
+                "error": config.errorCode[1],
+                "error_info": config.errorCodeinfo[1]
             })
     else:
         return jsonify({
-            "error": errorCode[0],
-            "error_info": errorCodeinfo[0]
+            "error": config.errorCode[0],
+            "error_info": config.errorCodeinfo[0]
         })
 
 
@@ -307,27 +262,27 @@ def get_title_from_chp():
             user = session.get('user_id')
             if not user:
                 return jsonify({
-                    "error": errorCode[4],
-                    "error_info": errorCodeinfo[4]
+                    "error": config.errorCode[4],
+                    "error_info": config.errorCodeinfo[4]
                 })
             # 输入筛查
             chp_id = str(request.json.get('chapters_id'))
             # 验证账户密码正确性
             op = OPcontrol.OPcontrol()
             get_dic = op.get_title(chp_id)
-            get_dic.setdefault("success", successCode[6])
-            get_dic.setdefault("success_info", successCodeinfo[6])
+            get_dic.setdefault("success", config.successCode[6])
+            get_dic.setdefault("success_info", config.successCodeinfo[6])
             print(get_dic)
             return jsonify(get_dic)
         except:
             return jsonify({
-                "error": errorCode[1],
-                "error_info": errorCodeinfo[1]
+                "error": config.errorCode[1],
+                "error_info": config.errorCodeinfo[1]
             })
     else:
         return jsonify({
-            "error": errorCode[0],
-            "error_info": errorCodeinfo[0]
+            "error": config.errorCode[0],
+            "error_info": config.errorCodeinfo[0]
         })
 
 
@@ -350,27 +305,27 @@ def get_titleInfo():
             user = session.get('user_id')
             if not user:
                 return jsonify({
-                    "error": errorCode[4],
-                    "error_info": errorCodeinfo[4]
+                    "error": config.errorCode[4],
+                    "error_info": config.errorCodeinfo[4]
                 })
             # 输入筛查
             tit_id = str(request.json.get('title_id'))
             # 验证账户密码正确性
             op = OPcontrol.OPcontrol()
             get_dic = op.get_title_info(tit_id)
-            get_dic.setdefault("success", successCode[6])
-            get_dic.setdefault("success_info", successCodeinfo[6])
+            get_dic.setdefault("success", config.successCode[6])
+            get_dic.setdefault("success_info", config.successCodeinfo[6])
             print(get_dic)
             return jsonify(get_dic)
         except:
             return jsonify({
-                "error": errorCode[1],
-                "error_info": errorCodeinfo[1]
+                "error": config.errorCode[1],
+                "error_info": config.errorCodeinfo[1]
             })
     else:
         return jsonify({
-            "error": errorCode[0],
-            "error_info": errorCodeinfo[0]
+            "error": config.errorCode[0],
+            "error_info": config.errorCodeinfo[0]
         })
 
 # 同上，随机获取题目信息
@@ -382,8 +337,8 @@ def get_randomTitleInfo():
             user = session.get('user_id')
             if not user:
                 return jsonify({
-                    "error": errorCode[4],
-                    "error_info": errorCodeinfo[4]
+                    "error": config.errorCode[4],
+                    "error_info": config.errorCodeinfo[4]
                 })
 
             # 验证账户密码正确性 - 先获取长度，再随机生成
@@ -392,19 +347,19 @@ def get_randomTitleInfo():
             tit_id = random.randint(1,table_length-1)
 
             get_dic = op.get_title_info(str(tit_id))
-            get_dic.setdefault("success", successCode[6])
-            get_dic.setdefault("success_info", successCodeinfo[6])
+            get_dic.setdefault("success", config.successCode[6])
+            get_dic.setdefault("success_info", config.successCodeinfo[6])
             print(get_dic)
             return jsonify(get_dic)
         except:
             return jsonify({
-                "error": errorCode[1],
-                "error_info": errorCodeinfo[1]
+                "error": config.errorCode[1],
+                "error_info": config.errorCodeinfo[1]
             })
     else:
         return jsonify({
-            "error": errorCode[0],
-            "error_info": errorCodeinfo[0]
+            "error": config.errorCode[0],
+            "error_info": config.errorCodeinfo[0]
         })
 
 # 同上，随机获取题目信息
@@ -417,8 +372,8 @@ def submit_answer():
             user = session.get('user_id')
             if not user:
                 return jsonify({
-                    "error": errorCode[4],
-                    "error_info": errorCodeinfo[4]
+                    "error": config.errorCode[4],
+                    "error_info": config.errorCodeinfo[4]
                 })
             # 输入筛查
             tit_id = str(request.json.get('title_id'))
@@ -433,23 +388,23 @@ def submit_answer():
             #7 - wrong ; 8 - right
             if isRight:
                 return jsonify({
-                    "success": successCode[8],
-                    "success_info": successCodeinfo[8],
+                    "success": config.successCode[8],
+                    "success_info": config.successCodeinfo[8],
                 })
             else:
                 return jsonify({
-                    "success": successCode[7],
-                    "success_info": successCodeinfo[7],
+                    "success": config.successCode[7],
+                    "success_info": config.successCodeinfo[7],
                 })
         except:
             return jsonify({
-                "error": errorCode[1],
-                "error_info": errorCodeinfo[1]
+                "error": config.errorCode[1],
+                "error_info": config.errorCodeinfo[1]
             })
     else:
         return jsonify({
-            "error": errorCode[0],
-            "error_info": errorCodeinfo[0]
+            "error": config.errorCode[0],
+            "error_info": config.errorCodeinfo[0]
         })
 
 
