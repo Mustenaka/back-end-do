@@ -34,7 +34,6 @@ app.permanent_session_lifetime = timedelta(minutes = 15)
 '''
 
 
-
 @app.route('/')
 def index():
     """
@@ -47,8 +46,7 @@ def index():
 
 # 检查登陆状态
 @app.route('/checklogin', methods=['GET', 'POST'])
-def check
-login():
+def check_login():
     """
     验证登陆状态
     API: http://localhost/checklogin
@@ -332,7 +330,7 @@ def get_chapters_from_sub():
 # 查询题目信息
 @app.route('/gettitlefromchp', methods=['GET', 'POST'])
 def get_title_from_chp():
-        """
+    """
     通过json传入章节ID，获取该科目ID下的全部题目ID
     API: http://localhost/gettitlefromchp
 
