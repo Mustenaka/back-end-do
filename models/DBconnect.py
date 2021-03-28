@@ -2,7 +2,18 @@ import pymysql
 import datetime
 
 class DBconnect:
+    """
+    数据库连接类，初始化将会连接数据库，其中的方法是增删改查，析构将会关闭数据库连接
+
+    Attributes:
+        None
+
+    """
     def __init__(self):
+        """
+        初始化数据库链接地址，连接数据库
+        host='159.75.72.254',port=3306, user='root', passwd="HHM135#", db='HHM'
+        """
         try:
             self.conn = pymysql.connect(
                 host='159.75.72.254',port=3306, user='root', passwd="HHM135#", db='HHM'
@@ -17,11 +28,16 @@ class DBconnect:
         except e:
             print(e)
 
-    # 测试查询代码 - 完成
-    # 封装查询代码 - 完成
-    # dbTable需要查询的表名称
-    # 输入表名字，直接查询表中全部内容
     def dbQuery(self,dbTable):
+        """
+        数据库查询代码，将需要查询的表名传入
+
+        Args:
+            dbTable: 需要查询的表名
+        
+        Returns:
+            一个查询结果的List，没有任何数据过滤，存粹”SELECT * FROM “返回表
+        """
         cur = self.cur
         sql = "SELECT * FROM "+dbTable
         cur.execute(sql)
@@ -31,11 +47,23 @@ class DBconnect:
             #print(r)
         return returnList
         
-    # -这几个特殊查询可以合并，但是可能要做很多参数传入，就偷了个懒-
 
+
+    # -这几个特殊查询最好别合并，因为参数传递很多，这样做就不需要手动指定那么多的参数了
     # 特殊查询 -
-    # 根据 subject 编号查询该编号下的 chapter 信息
+    # 根据 subject 编号查询到该编号下的 chapter 信息
     def dbQuery_chapter_according_to_subject(self,sub_id):
+        """
+        特殊查询，不这样设计API的话，可能该API传入参数会过多，所以这样设计的传入的API。
+        通过subject_id 查询 chapter_id
+
+        Args：
+            sub_id： 需要查询的 科目ID
+
+        Returns:
+            返回章节列表
+
+        """
         cur = self.cur
         dbTable = "chapters_info"
         sql = "SELECT * FROM "+dbTable +" WHERE subjectId='"+sub_id+"'"
@@ -50,6 +78,16 @@ class DBconnect:
     # 特殊查询 - 
     # 根据 chapter 编号查询该编号下的 title 信息
     def dbQuery_title_according_to_chapter(self,chp_id):
+        """
+        通过chapter_id 查询 title_id，通过章节ID查询到题目ID
+
+        Args：
+            chp_id 需要查询的 章节ID
+
+        Returns:
+            返回题目列表
+
+        """
         cur = self.cur
         dbTable = "titlenumber_info"
         sql = "SELECT * FROM "+dbTable +" WHERE chaptersId='"+chp_id+"'"
@@ -63,6 +101,16 @@ class DBconnect:
     # 特殊查询 - 
     # 根据 title 编号查询该编号下的 title 的详细信息
     def dbQuery_title_according_to_title(self,tit_id):
+        """
+        通过题目ID查询到这个题目对应的具体题目内容
+
+        Args：
+            tit_id 需要查询的 题目ID
+
+        Returns:
+            返回题目具体信息，具体信息有：
+
+        """
         cur = self.cur
         dbTable = "title_info"
         sql = "SELECT * FROM "+dbTable +" WHERE titleId='"+tit_id+"'"
@@ -73,8 +121,17 @@ class DBconnect:
             returnList.append(r)
         return returnList
 
-    # 查询长度
+
     def dbQuery_title_len(self,dbTable):
+        """
+        查询表中长度
+
+        Args:
+            dbTable 需要查询的表
+
+        Returns:
+            返回一个数字，即拥有多少已经存储的内容
+        """
         cur = self.cur
         sql = "select  count(*) from `"+dbTable+"`"
         print(sql)
@@ -82,8 +139,22 @@ class DBconnect:
         for r in cur:
             return r[0]
     
-    # 用户登陆判断查询
+
     def dbQuery_userLogin(self,user_id,user_pwd):
+        """
+        通过用户名密码进行登陆判断，准备改成使用用户账户名和密码登陆的方式
+
+        Args:
+            user_id 用户ID
+            user_pwd 用户密码
+
+        Feature args:
+            user_name 用户名
+            user_pwd 用户密码
+
+        Returns:
+            返回一个查询结果，即存在该用户ID和其对应的密码则为登陆成功，否则为失败。
+        """
         conn = self.conn
         cur = self.cur
         dbTable = "user_info"
@@ -101,8 +172,18 @@ class DBconnect:
         for r in cur:
             return r
 
-    # 用户是否存在查询
+
     def dbQuery_user_is_already(self,user_id):
+        """
+        判断一个用户ID是否已经存在了，在注册的时候使用
+
+        Args:
+            user_id 用户ID
+
+        Returns:
+            返回查询到的user_id内容
+
+        """
         conn = self.conn
         cur = self.cur
         dbTable = "user_info"
@@ -121,10 +202,14 @@ class DBconnect:
             return r
 
 
-    # 测试删除代码 - 完成
-    # 封装删除代码 - 完成
-    # dbTable 表名称 - needId 删除索引 - inputId 输入的值
     def dbDelete(self,dbTable,needId,inputId):
+        """
+        删除表中特定字段以及对应该字段的值的记录
+        Args:
+            needId 需要查询的字段，比如说user_id
+            inputId 需要删除该对应字段的记录，比如说 momon1
+        
+        """
         conn = self.conn
         cur = self.cur
         sql = "DELETE from "+dbTable+" where "+needId+"="+inputId
@@ -138,10 +223,16 @@ class DBconnect:
             #错误回滚
             conn.rollback()
     
-    # 测试插入代码 - 完成
-    # 封装 - 特殊情况特殊判断 - 时间参数待处理
-    # dbTable 表名称 - 插入参数
+
     def dbInsert(self,dbTable,*args):
+        """
+        插入数据库代码，根据表名称自动产生对应该表名称的插入代码，
+        但是前提是传入的args的值必须合适，不能多也不能少
+
+        Args:
+            dbTable 数据表
+            args 多参数传入值，必须要和数据库字段一一对应
+        """
         conn = self.conn
         cur = self.cur
 
@@ -182,8 +273,15 @@ class DBconnect:
             return False
         return True
 
-    # 传入【是否正确】，以及【user_id】更新用户的做题信息
+
     def dbUpdate_user_answer(self,isRight,user_id):
+        """
+        根据用户做题的情况对用户答对字段或者是用户答错字段进行加一或者减一
+        
+        Args:
+            isRight 是否答对了，bool 变量
+            user_id 用户ID
+        """
         conn = self.conn
         cur = self.cur
         if isRight:
@@ -204,6 +302,14 @@ class DBconnect:
     # 封装更新，修改代码 - 完成
     # dbTable 表名称 -  needValue 需要修改的值名 - inputValue 需要修改的值 - needId 查询的ID名 - inputId 查询的ID具体内容
     def dbUpdate_signled(self,dbTable,needValue,inputValue,needId,inputId):
+        """
+        对数据库中单个表的参数进行修改，
+        Args：
+            needValue 需要修改的值名 
+            inputValue 需要修改的值 
+            needId 查询的ID名 
+            inputId 查询的ID具体内容
+        """
         conn = self.conn
         cur = self.cur
         sql = "update "+ dbTable+" set "+needValue+"=\'"+inputValue+"\' where " + needId + "=" + inputId
@@ -217,11 +323,17 @@ class DBconnect:
             #错误回滚
             conn.rollback()
 
-    # 批量更新，想了想就不做了 -  咕咕咕
+    
     def dbUpdate_all(self,dbTable):
+        """
+        批量更新，还没有写，我觉得批量修改表中某个记录的代码需要特判，所以应该在后续重新创建
+        """
         pass
 
     def __del__(self):
+        """
+        析构函数，关闭表和查询
+        """
         self.cur.close()
         self.conn.close()
 
