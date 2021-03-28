@@ -32,15 +32,32 @@ session.permanent = True
 app.permanent_session_lifetime = timedelta(minutes = 15) 
 '''
 
-# 根目录，还没有想好放什么
+
+
 @app.route('/')
 def index():
+    """
+    根目录-首页，index.html页面，目前只有一个hello world做返回
+    """
     # 首页
     return "hello world"
 
+
+
 # 检查登陆状态
 @app.route('/checklogin', methods=['GET', 'POST'])
-def checklogin():
+def check
+login():
+    """
+    验证登陆状态
+    API: http://localhost/checklogin
+
+    Args:
+        user_id  用户ID
+    
+    Returns:
+        错误返回错误码，成功返回登陆情况
+    """
     if 'user_id' in session:
         return jsonify({
             "success": config.successCode[3],
@@ -55,20 +72,34 @@ def checklogin():
     })
 
 
+
 # 彩蛋
 @app.route('/Easter_eggs', methods=['GET', 'POST'])
 def miaozi_hello():
+    """
+    彩蛋页面，用来验证传输的是否是UTF-8
+    """
     miaozi = "年轻人恭喜你发现这个彩蛋，喵子是最可爱的人，不是么？"
     return jsonify({
         "Easter_eggs": miaozi
     })
 
-# 登陆
-# user_id - 用户登陆ID
-# user_pwd - 用户登陆密码
-# user_wx_id - 用户微信pid
+
+
+# 登陆 - 待重写
 @app.route('/login', methods=['GET', 'POST'])
 def Login_():
+    """
+    登陆,验证传入
+    API: http://localhost/login
+
+    Args:
+        user_name - 用户登陆ID
+        user_pwd - 用户登陆密码
+
+    Returns:
+        返回用户id，是否是管理员，以及成功码
+    """
     if request.method == 'POST':
         try:
             user_id = str(request.json.get('user_id'))
@@ -105,10 +136,17 @@ def Login_():
             "error_info": config.errorCodeinfo[0]
         })
 
-# 登出 - 直接关闭浏览器或者微信小程序断开连接也算登出了，session会自动清除的
-# user_id - 用户登陆ID
+
+
+# 登出
 @app.route('/logout', methods=['GET', 'POST'])
 def Logout_():
+    """
+    登出，冷门API
+
+    Args:
+        user_id 用户ID
+    """
     if request.method == 'POST':
         try:
             # 登出主要是为了删除session
@@ -133,9 +171,21 @@ def Logout_():
         })
 
 
-# 注册
+
+# 注册 - 待重写
 @app.route('/register', methods=['GET', 'POST'])
 def Register_():
+    """
+    登陆, 注册，需要输入 通过输入的用户名密码生成一个唯一的user_id
+    API: http://localhost/login
+
+    Args:
+        user_name - 用户登陆ID
+        user_pwd - 用户登陆密码
+
+    Returns:
+        改用户在user_info表中全部的信息
+    """
     if request.method == 'POST':
         try:
             # 登出主要是为了删除session
@@ -169,9 +219,13 @@ def Register_():
             "error_info": config.errorCodeinfo[0]
         })
 
-# 获取全部章节信息（不常用API - 测试用） 
+
+
 @app.route('/getChaptersall', methods=['GET', 'POST'])
 def get_chapter():
+    """
+    获取全部章节信息（不常用API - 测试用） 
+    """
     # GET请求 和 POST请求都可以
     try:
         # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
@@ -193,10 +247,19 @@ def get_chapter():
             "error": config.errorCode[1],
             "error_info": config.errorCodeinfo[1]
         })
-        
-# 获取全部书本（科目）信息 
+
+
+  
+# 获取全部科目信息 
 @app.route('/getsubject', methods=['GET', 'POST'])
 def get_subject():
+    """
+    获取全部科目信息，408科目中一共有四个科目，分别是《数据结构》《计算机网络》《计算机操作系统》《计算机组成原理》
+    API: http://localhost/getsubject
+
+    Returns:
+        科目ID，科目名称，科目简介
+    """
     # GET请求 和 POST请求都可以
     try:
         # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
@@ -218,10 +281,22 @@ def get_subject():
             "error_info": config.errorCodeinfo[1]
         })
 
-# 查询章节信息 - 通过给定科目名称
-# 输入 : subject_id - 需要查询的章节名
+
+
+# 查询章节信息
 @app.route('/getchapterfromsub', methods=['GET', 'POST'])
 def get_chapters_from_sub():
+    """
+    通过json传入科目ID，获取该科目ID下的全部章节
+    API: http://localhost/getchapterfromsub
+
+    Args:
+        subject_id
+
+    Returns:
+        科目ID，章节ID，章节名称
+
+    """
     if request.method == 'POST':
         try:
             # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
@@ -252,10 +327,21 @@ def get_chapters_from_sub():
         })
 
 
-# 查询题目信息 - 通过给定章节名 (只显示题目号-不显示详细信息)
-# 输入 : chapters_id - 需要查询的章节名
+
+# 查询题目信息
 @app.route('/gettitlefromchp', methods=['GET', 'POST'])
 def get_title_from_chp():
+        """
+    通过json传入章节ID，获取该科目ID下的全部题目ID
+    API: http://localhost/gettitlefromchp
+
+    Args:
+        chapters_id
+
+    Returns:
+        章节ID，题目ID
+
+    """
     if request.method == 'POST':
         try:
             # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
@@ -287,18 +373,28 @@ def get_title_from_chp():
 
 
 
+
 # 获取题目详细信息
-# 说明
-#   title_id:   输入的titleid  
-#   titleHead:   题目的标题
-#   titleCont:  题目的内容
-#   titleAnswer:    题目的答案（选择填空混合）
-#   titleAnalysis:  题目的解析
-#   titleAveracc:   题目的平均正确率
-#   titlespaper:    题目来自的试卷
-#   specialNote:    特殊注解（一般没有为None）
 @app.route('/gettitleinfo', methods=['GET', 'POST'])
 def get_titleInfo():
+    """
+    根据题目ID获取题目详细信息，包括题目描述，正确答案，相关的解析等内容
+    API：http://localhost/gettitleinfo
+
+    Args:
+        title_id 题目ID
+    
+    Returns:
+        title_id:   输入的题目ID 
+        titleHead:   题目的标题
+        titleCont:  题目的内容
+        titleAnswer:    题目的答案（选择填空混合）
+        titleAnalysis:  题目的解析
+        titleAveracc:   题目的平均正确率
+        titlespaper:    题目来自的试卷
+        specialNote:    特殊注解（一般没有为None）
+
+    """
     if request.method == 'POST':
         try:
             # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
@@ -328,9 +424,15 @@ def get_titleInfo():
             "error_info": config.errorCodeinfo[0]
         })
 
+
+
 # 同上，随机获取题目信息
 @app.route('/getrandomtitleinfo', methods=['GET', 'POST'])
 def get_randomTitleInfo():
+    """
+    同上，无需传入任何参数，直接获取题目信息
+    API：http://localhost/getrandomtitleinfo
+    """
     if request.method == 'POST':
         try:
             # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
@@ -362,10 +464,33 @@ def get_randomTitleInfo():
             "error_info": config.errorCodeinfo[0]
         })
 
-# 同上，随机获取题目信息
-# Submit answer
+
+
+
+# 提交答案
 @app.route('/submitanswer', methods=['GET', 'POST'])
 def submit_answer():
+    """
+    提交题目的回答
+    API：http://localhost/submitanswer
+
+    Args:
+        title_id 题目ID
+        user_id 用户ID
+        answer 用户回答
+        user_note 用户注解
+    
+    Returns:
+        title_id:   输入的题目ID 
+        titleHead:   题目的标题
+        titleCont:  题目的内容
+        titleAnswer:    题目的答案（选择填空混合）
+        titleAnalysis:  题目的解析
+        titleAveracc:   题目的平均正确率
+        titlespaper:    题目来自的试卷
+        specialNote:    特殊注解（一般没有为None）
+
+    """
     if request.method == 'POST':
         try:
             # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
@@ -408,10 +533,15 @@ def submit_answer():
         })
 
 
+
+
 # 获取个人签到信息
 # 待补充
 @app.route('/getpersonalsignin', methods=['GET', 'POST'])
 def get_PersonalSignin(test):
+    """
+    代码好像不知道在哪里被give up了
+    """
     pass
 
 
