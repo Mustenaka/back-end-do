@@ -16,6 +16,7 @@ import models.testDB as testDB
 
 import control.OPcontrol as OPcontrol
 import routes.config as config
+import Log.logutil2 as log
 from control.Msession import MySessionInterface
 
 app = Flask(__name__)
