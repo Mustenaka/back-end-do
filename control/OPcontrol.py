@@ -8,12 +8,15 @@ import models.DBconnect as DBconnect
 import random
 
 class OPcontrol:
+    """
+    control 控制层，承上启下，该层作用为：
+    对基本的数据库层代码进行调用，并进行一系列的逻辑处理，并且返回结果给API层
+
+    """
     def __init__(self):
         # 对于数据库而言，不用长连接，怕长时间不操作还占用带宽
         pass
     
-    def __del__(self):
-        pass
 
     # 检查登陆信息 - 输入 user_id 返回user_pwd
     # 返回一个字典 - 成功登陆：
@@ -25,6 +28,9 @@ class OPcontrol:
     # 失败登陆：
     # returnCode - r0
     def check_login(self,user_id,user_pwd,user_wx_id):
+        """
+        登陆确认 
+        """
         db = DBconnect.DBconnect()
         info = db.dbQuery_userLogin(user_id,user_pwd)
         if info == None:
