@@ -140,15 +140,11 @@ class DBconnect:
             return r[0]
     
 
-    def dbQuery_userLogin(self,user_id,user_pwd):
+    def dbQuery_userLogin(self, user_name ,user_pwd):
         """
         通过用户名密码进行登陆判断，准备改成使用用户账户名和密码登陆的方式
 
         Args:
-            user_id 用户ID
-            user_pwd 用户密码
-
-        Feature args:
             user_name 用户名
             user_pwd 用户密码
 
@@ -158,7 +154,7 @@ class DBconnect:
         conn = self.conn
         cur = self.cur
         dbTable = "user_info"
-        sql  = "SELECT * FROM "+dbTable+" WHERE userId='"+user_id+"' and userPwd='"+user_pwd+"'"
+        sql  = "SELECT * FROM "+dbTable+" WHERE userName='"+user_name+"' and userPwd='"+user_pwd+"'"
         print(sql)
         try:
             cur.execute(sql)
