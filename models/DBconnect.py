@@ -197,6 +197,34 @@ class DBconnect:
         for r in cur:
             return r
 
+    def dbQuery_user_name_is_already(self, user_name):
+        """
+        判断一个用户ID是否已经存在了，在注册的时候使用
+
+        Args:
+            user_name 用户名
+
+        Returns:
+            返回查询到的user_id内容
+
+        """
+        conn = self.conn
+        cur = self.cur
+        dbTable = "user_info"
+        sql  = "SELECT * FROM "+dbTable+" WHERE userName='"+user_name+"'"
+        print(sql)
+        try:
+            cur.execute(sql)
+            conn.commit()
+        except Exception as e:
+            print("操作异常：%s"%str(e))
+            #错误回滚
+            conn.rollback()
+            return e
+        # 返回第一个合适的信息 - 也只有一个合适的信息
+        for r in cur:
+            return r
+
 
     def dbDelete(self,dbTable,needId,inputId):
         """
