@@ -1,0 +1,10 @@
+[2021-03-29 21:27:00] [INFO]  * Restarting with stat
+[2021-03-29 21:27:01] [WARNING]  * Debugger is active!
+[2021-03-29 21:27:01] [INFO]  * Debugger PIN: 298-789-133
+[2021-03-29 21:27:01] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2021-03-29 21:27:47] [DEBUG] login - None and 123123
+[2021-03-29 21:27:48] [INFO] 127.0.0.1 - - [29/Mar/2021 21:27:48] "[37mPOST /login HTTP/1.1[0m" 200 -
+[2021-03-29 21:28:13] [DEBUG] login - None and 123123
+[2021-03-29 21:28:15] [INFO] 127.0.0.1 - - [29/Mar/2021 21:28:15] "[37mPOST /login HTTP/1.1[0m" 200 -
+[2021-03-29 21:28:27] [DEBUG] login - root and 123123
+[2021-03-29 21:28:28] [INFO] 127.0.0.1 - - [29/Mar/2021 21:28:28] "[37mPOST /login HTTP/1.1[0m" 200 -
