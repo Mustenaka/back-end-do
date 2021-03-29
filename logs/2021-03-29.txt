@@ -20,3 +20,30 @@
 [2021-03-29 21:43:13] [INFO]  * Debugger PIN: 298-789-133
 [2021-03-29 21:43:13] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 [2021-03-29 21:43:22] [INFO] 127.0.0.1 - - [29/Mar/2021 21:43:22] "[37mPOST /register HTTP/1.1[0m" 200 -
+[2021-03-29 21:45:18] [INFO]  * Restarting with stat
+[2021-03-29 21:45:19] [WARNING]  * Debugger is active!
+[2021-03-29 21:45:19] [INFO]  * Debugger PIN: 298-789-133
+[2021-03-29 21:45:19] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2021-03-29 21:45:32] [INFO] 127.0.0.1 - - [29/Mar/2021 21:45:32] "[37mPOST /register HTTP/1.1[0m" 200 -
+[2021-03-29 21:47:03] [INFO]  * Detected change in 'd:\\MIAOZI\\back-py\\control\\OPcontrol.py', reloading
+[2021-03-29 21:47:03] [INFO]  * Restarting with stat
+[2021-03-29 21:47:05] [WARNING]  * Debugger is active!
+[2021-03-29 21:47:05] [INFO]  * Debugger PIN: 298-789-133
+[2021-03-29 21:47:05] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2021-03-29 21:47:12] [INFO]  * Detected change in 'd:\\MIAOZI\\back-py\\models\\DBconnect.py', reloading
+[2021-03-29 21:47:12] [INFO]  * Restarting with stat
+[2021-03-29 21:47:13] [WARNING]  * Debugger is active!
+[2021-03-29 21:47:13] [INFO]  * Debugger PIN: 298-789-133
+[2021-03-29 21:47:13] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2021-03-29 21:47:15] [INFO]  * Detected change in 'd:\\MIAOZI\\back-py\\models\\DBconnect.py', reloading
+[2021-03-29 21:47:15] [INFO]  * Restarting with stat
+[2021-03-29 21:47:18] [WARNING]  * Debugger is active!
+[2021-03-29 21:47:18] [INFO]  * Debugger PIN: 298-789-133
+[2021-03-29 21:47:18] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2021-03-29 21:47:21] [INFO]  * Detected change in 'd:\\MIAOZI\\back-py\\control\\OPcontrol.py', reloading
+[2021-03-29 21:47:21] [INFO]  * Restarting with stat
+[2021-03-29 21:47:24] [WARNING]  * Debugger is active!
+[2021-03-29 21:47:24] [INFO]  * Debugger PIN: 298-789-133
+[2021-03-29 21:47:24] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2021-03-29 21:47:28] [INFO]  * Detected change in 'd:\\MIAOZI\\back-py\\models\\DBconnect.py', reloading
+[2021-03-29 21:47:28] [INFO]  * Restarting with stat
