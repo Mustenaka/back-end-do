@@ -169,7 +169,7 @@ class DBconnect:
             return r
 
 
-    def dbQuery_user_is_already(self,user_id):
+    def dbQuery_user_id_is_already(self, user_id):
         """
         判断一个用户ID是否已经存在了，在注册的时候使用
 
