@@ -49,7 +49,7 @@ class OPcontrol:
         return dic
 
 
-    def __is_already(self, db, user_id):
+    def __is_user_id_already(self, db, user_id):
         """
         内部函数，用来判断该用户是否已经存在，该内部方法的调用时刻在于创建【用户ID】的时候进行判断
         （即使user_id生成8位随机数，但还是不排除有可能有重复）
@@ -67,14 +67,34 @@ class OPcontrol:
             return False
         else:
             return True
+    
+    def __is_user_name_already(self, db, user_name):
+        """
+        内部函数，用来判断该用户是否已经存在，该内部方法的调用时刻在于创建【用户ID】的时候进行判断
+        （即使user_id生成8位随机数，但还是不排除有可能有重复）
+
+        Args:
+            db 数据库打开的指针
+            user_name 用户名称
+
+        Return
+            False - 不重复， True - 重复
+        """
+        db = DBconnect.DBconnect()
+        info = db.dbQuery_user_is_already(user_name)
+        if info == None:
+            return False
+        else:
+            return True
          
 
-    # 等待重构 - ❌
+    # 注册 -  完善逻辑中 - 
     def register(self, user_name, user_pwd):
         """
         创建一个新用户, 通过传递进来的用户名和密码注册。
         自动生成一个8位随机数字的user_id，这个id将会是整个系统中用户的绝对唯一标识符
-        此外，由于前端是无法获取到微信ID，只能作为页面提供方
+        此外，也会对用户名进行重复性判断，不允许输入重复的用户名
+        同时，由于前端是无法获取到微信ID，只能作为页面提供方
         所以user_wx_id这个参数作废了，目前这个参数只能同user_id相同
 
         在旧的版本中，传入的参数是微信ID，可是微信的OpenID是无法通过前端获取的，只能由后端存储传递给前端，
@@ -94,12 +114,17 @@ class OPcontrol:
             user_wrongAnswer 错误答题数0
 
         """
+        bool_is_user_name_already = self.__is_user_name_already(db, user_name)
+        if bool_is_user_name_already:
+            return {"returnCode":"r0"}
         db = DBconnect.DBconnect()
         new_user_id = str(random.randint(0,99999999)).zfill(8)
-        bool_is_already = self.__is_already(db,new_user_id) 
+        bool_is_already = self.__is_user_id_already(db,new_user_id) 
         while bool_is_already:
             new_user_id = str(random.randint(0,99999999)).zfill(8)
-            bool_is_already = self.__is_already(db,new_user_id)
+            bool_is_already = self.__is_user_id_already(db,new_user_id)
+
+
 
         # 插入数据库
         is_successful = db.dbInsert(
