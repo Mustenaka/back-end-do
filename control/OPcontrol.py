@@ -61,7 +61,7 @@ class OPcontrol:
         Return
             False - 不重复， True - 重复
         """
-        db = DBconnect.DBconnect()
+        #db = DBconnect.DBconnect()
         info = db.dbQuery_user_id_is_already(user_id)
         if info == None:
             return False
@@ -80,7 +80,7 @@ class OPcontrol:
         Return
             False - 不重复， True - 重复
         """
-        db = DBconnect.DBconnect()
+        #db = DBconnect.DBconnect()
         info = db.dbQuery_user_name_is_already(user_name)
         if info == None:
             return False
@@ -114,10 +114,12 @@ class OPcontrol:
             user_wrongAnswer 错误答题数0
 
         """
+        db = DBconnect.DBconnect()
+
         bool_is_user_name_already = self.__is_user_name_already(db, user_name)
         if bool_is_user_name_already:
             return {"returnCode":"r0"}
-        db = DBconnect.DBconnect()
+        
         new_user_id = str(random.randint(0,99999999)).zfill(8)
         bool_is_already = self.__is_user_id_already(db,new_user_id) 
         while bool_is_already:
