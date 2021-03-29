@@ -5,3 +5,5 @@ control/__pycache__/OPcontrol.cpython-37.pyc
 models/__pycache__/DBconnect.cpython-37.pyc
 Log/__pycache__/logutil2.cpython-37.pyc
 Log/__pycache__/__init__.cpython-37.pyc
+control/__pycache__/OPcontrol.cpython-37.pyc
+models/__pycache__/DBconnect.cpython-37.pyc
