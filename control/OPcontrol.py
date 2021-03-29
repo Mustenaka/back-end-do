@@ -29,6 +29,7 @@ class OPcontrol:
         Returns
             一个字典，返回用户ID，用户名，和用户微信ID
         """
+        print("-----------")
         db = DBconnect.DBconnect()
         info = db.dbQuery_userLogin(user_name, user_pwd)
         if info == None:
@@ -38,9 +39,11 @@ class OPcontrol:
                 "returnCode":"a0",
                 "user_id":info[0],
                 "user_name":info[1],
+                "user_pwd":info[2],
                 "user_wx_id":info[3],
                 "user_rightAnswer":info[4],
-                "user_wrongAnswer":info[5]
+                "user_wrongAnswer":info[5],
+                "isAdministrator":info[6],
             }
         print(dic)
         return dic
@@ -70,6 +73,10 @@ class OPcontrol:
     def register(self, user_name, user_pwd):
         """
         创建一个新用户, 通过传递进来的用户名和密码注册。
+        自动生成一个8位随机数字的user_id，这个id将会是整个系统中用户的绝对唯一标识符
+        此外，由于前端是无法获取到微信ID，只能作为页面提供方
+        所以user_wx_id这个参数作废了，目前这个参数只能同user_id相同
+
         在旧的版本中，传入的参数是微信ID，可是微信的OpenID是无法通过前端获取的，只能由后端存储传递给前端，
         所以这一部分代码需要进行重构
 
@@ -93,22 +100,28 @@ class OPcontrol:
         while bool_is_already:
             new_user_id = str(random.randint(0,99999999)).zfill(8)
             bool_is_already = self.__is_already(db,new_user_id)
+
         # 插入数据库
-        # userName 暂时和 userId 相同，这样只是为了让微信用户快速注册
-        # userPwd 暂时设置为 123456
-        # 对于新用户而言 已经回答的正确数 为 0，错误题目数也为0
-        temp_pwd = "123456"
-        args = (new_user_id,new_user_id,temp_pwd,user_wx_id,0,0)
-        is_successful = db.dbInsert("user_info",new_user_id,new_user_id,temp_pwd,user_wx_id,0,0)
+        is_successful = db.dbInsert(
+            "user_info",
+            new_user_id,
+            user_name,
+            user_pwd,
+            new_user_id,
+            0,
+            0,
+            0
+            )
         if is_successful:
             dic = {
-                "returnCode":"a0",
-                "user_id":new_user_id,
-                "user_name":new_user_id,
-                "user_pwd":temp_pwd,
-                "user_wx_id":user_wx_id,
-                "user_rightAnswer":"0",
-                "user_wrongAnswer":"0"
+                "returnCode": "a0",
+                "user_id": new_user_id,
+                "user_name": user_name,
+                "user_pwd": user_pwd,
+                "user_wx_id": new_user_id,
+                "user_rightAnswer": 0,
+                "user_wrongAnswer": 0,
+                "isAdministrator": 0
             }
         else:
             dic = {
