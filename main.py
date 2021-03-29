@@ -26,6 +26,8 @@ app.config['JSON_SORT_KEYS'] = False
 # 随机生成SECRET_KEY
 app.config['SECRET_KEY'] = os.urandom(24)
 
+# 启动日志服务
+logger = log.logs()
 '''
 # 强制 指定session时间，如果不指定则关闭浏览器自动清除
 session.permanent = True
@@ -34,13 +36,15 @@ app.permanent_session_lifetime = timedelta(minutes = 15)
 '''
 
 
-@app.route('/')
+@app.route('/', methods = ['GET', 'POST'])
 def index():
     """
-    根目录-首页，index.html页面，目前只有一个hello world做返回
+    根目录-首页，无论任何方法都可以返回一个英文的测试json
     """
     # 首页
-    return "hello world"
+    return jsonify({
+        "index" : "There is no index page, just the json."
+    })
 
 
 
@@ -89,42 +93,56 @@ def miaozi_hello():
 @app.route('/login', methods=['GET', 'POST'])
 def Login_():
     """
-    登陆,验证传入
+    登陆, 验证传入的用户名和密码是否在数据库中匹配
     API: http://localhost/login
 
     Args:
-        user_name - 用户登陆ID
+        user_name - 用户名
         user_pwd - 用户登陆密码
 
     Returns:
-        返回用户id，是否是管理员，以及成功码
+        返回用户id，用户名，是否是管理员，以及成功码
     """
     if request.method == 'POST':
         try:
-            user_id = str(request.json.get('user_id'))
+            # 获取用户名密码
+            user_name = str(request.json.get('user_name'))
             user_pwd = str(request.json.get('user_pwd'))
-            user_wx_id = str(request.json.get('user_wx_id'))
+            logger.debug("login - "+user_name+" and "+user_pwd)
             # 验证账户密码正确性
             op = OPcontrol.OPcontrol()
-            retrunDic = op.check_login(user_id,user_pwd,user_wx_id)
+            returnDic = op.check_login(user_name, user_pwd)
+
             # 判断登陆是否成功 - r0 登陆失败 , a0 登陆成功 
-            if retrunDic['returnCode'] == "r0":
+            if returnDic['returnCode'] == "r0":
                 # 登陆失败，抛出错误代码
                 return jsonify({
                     "error": config.errorCode[2],
                     "error_info": config.errorCodeinfo[2]
                 })
-            elif retrunDic['returnCode'] == "a0":
-                # 登陆成功 - 添加进入session
+            elif returnDic['returnCode'] == "a0":
+                # 获取该用户的用户id 以及 用户名
+                user_id = returnDic['user_id']
+                user_name = returnDic['user_name']
+                user_rightAnswer = returnDic['user_rightAnswer']
+                user_wrongAnswer = returnDic['user_wrongAnswer']
+                isAdministrator = returnDic['isAdministrator']
+                
+                # 登陆成功 - 将user_id 添加进入session
                 session["user_id"] = user_id
+
                 # 返回正确代码和信息
                 return jsonify({
                     "user_id": user_id,
-                    "user_wx_id":user_wx_id,
+                    "user_name": user_name,
+                    "user_rightAnswer": user_rightAnswer,
+                    "user_wrongAnswer": user_wrongAnswer,
+                    "isAdministrator": isAdministrator,
                     "success": config.successCode[0],
                     "success_info": config.successCodeinfo[0]
                 })
-        except:
+        except IOError as exc:
+            logger.error(exc)
             return jsonify({
                 "error": config.errorCode[1],
                 "error_info": config.errorCodeinfo[1]
@@ -141,14 +159,14 @@ def Login_():
 @app.route('/logout', methods=['GET', 'POST'])
 def Logout_():
     """
-    登出，冷门API
+    登出，冷门API, 登出主要是为了删除session
 
     Args:
         user_id 用户ID
     """
     if request.method == 'POST':
         try:
-            # 登出主要是为了删除session
+            # 获取user_id
             user_id = str(request.json.get('user_id'))
             print(user_id)
             session.pop('user_id', None)
@@ -171,11 +189,12 @@ def Logout_():
 
 
 
-# 注册 - 待重写
+# 注册
 @app.route('/register', methods=['GET', 'POST'])
 def Register_():
     """
     登陆, 注册，需要输入 通过输入的用户名密码生成一个唯一的user_id
+    并且返回这些基本信息
     API: http://localhost/login
 
     Args:
@@ -187,22 +206,25 @@ def Register_():
     """
     if request.method == 'POST':
         try:
-            # 登出主要是为了删除session
-            user_wx_id = str(request.json.get('user_wx_id'))
+            # 传递进来用户名和密码
+            user_name = str(request.json.get('user_name'))
+            user_pwd = str(request.json.get('user_pwd'))
+
             op = OPcontrol.OPcontrol()
-            retrunDic = op.register(user_wx_id)
-            if retrunDic['returnCode'] == "a0":
+            returnDic = op.register(user_name, user_pwd)
+            if returnDic['returnCode'] == "a0":
                 return jsonify({
-                        "user_id": retrunDic['user_id'],
-                        "user_name":retrunDic['user_name'],
-                        "user_pwd":retrunDic['user_pwd'],
-                        "user_wx_id":retrunDic['user_wx_id'],
-                        "user_rightAnswer":retrunDic['user_rightAnswer'],
-                        "user_wrongAnswer":retrunDic['user_wrongAnswer'],
+                        "user_id": returnDic['user_id'],
+                        "user_name": returnDic['user_name'],
+                        "user_pwd": returnDic['user_pwd'],
+                        "user_wx_id": returnDic['user_wx_id'],
+                        "user_rightAnswer": returnDic['user_rightAnswer'],
+                        "user_wrongAnswer": returnDic['user_wrongAnswer'],
+                        "isAdministrator": returnDic['isAdministrator'],
                         "success": config.successCode[2],
                         "success_info": config.successCodeinfo[2]
                     })
-            elif retrunDic['returnCode'] == "r0":
+            elif returnDic['returnCode'] == "r0":
                 return jsonify({
                         "error": config.errorCode[3],
                         "error_info": config.errorCodeinfo[3]
@@ -306,10 +328,13 @@ def get_chapters_from_sub():
                     "error_info": config.errorCodeinfo[4]
                 })
             # 输入筛查
-            chp_id = str(request.json.get('subject_id'))
+            sub_id = str(request.json.get('subject_id'))
+            if sub_id == "":
+                raise NameError("notInput")
+
             # 验证账户密码正确性
             op = OPcontrol.OPcontrol()
-            get_dic = op.get_chapter(chp_id)
+            get_dic = op.get_chapter(sub_id)
             get_dic.setdefault("success", config.successCode[5])
             get_dic.setdefault("success_info", config.successCodeinfo[5])
             print(get_dic)
@@ -319,6 +344,7 @@ def get_chapters_from_sub():
                 "error": config.errorCode[1],
                 "error_info": config.errorCodeinfo[1]
             })
+
     else:
         return jsonify({
             "error": config.errorCode[0],
@@ -352,6 +378,8 @@ def get_title_from_chp():
                 })
             # 输入筛查
             chp_id = str(request.json.get('chapters_id'))
+            if chp_id == "":
+                raise NameError("notInput")
             # 验证账户密码正确性
             op = OPcontrol.OPcontrol()
             get_dic = op.get_title(chp_id)
@@ -364,6 +392,7 @@ def get_title_from_chp():
                 "error": config.errorCode[1],
                 "error_info": config.errorCodeinfo[1]
             })
+
     else:
         return jsonify({
             "error": config.errorCode[0],
