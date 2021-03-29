@@ -237,7 +237,7 @@ class DBconnect:
         sql = ""
         print(args)
         if dbTable == "user_info":
-            sql = "INSERT INTO "+dbTable+" VALUES(%s,%s,%s,%s,%s,%s);"
+            sql = "INSERT INTO "+dbTable+" VALUES(%s,%s,%s,%s,%s,%s,%s);"
         elif dbTable == "titlenumber_info":
             sql = "INSERT INTO "+dbTable+" VALUES(%s,%s);"
         elif dbTable == "titlenote_info":
