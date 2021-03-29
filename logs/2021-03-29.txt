@@ -47,3 +47,30 @@
 [2021-03-29 21:47:24] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 [2021-03-29 21:47:28] [INFO]  * Detected change in 'd:\\MIAOZI\\back-py\\models\\DBconnect.py', reloading
 [2021-03-29 21:47:28] [INFO]  * Restarting with stat
+[2021-03-29 21:48:29] [INFO]  * Restarting with stat
+[2021-03-29 21:48:31] [WARNING]  * Debugger is active!
+[2021-03-29 21:48:31] [INFO]  * Debugger PIN: 298-789-133
+[2021-03-29 21:48:31] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2021-03-29 21:48:34] [INFO] 127.0.0.1 - - [29/Mar/2021 21:48:34] "[37mPOST /register HTTP/1.1[0m" 200 -
+[2021-03-29 21:48:42] [INFO] 127.0.0.1 - - [29/Mar/2021 21:48:42] "[37mPOST /register HTTP/1.1[0m" 200 -
+[2021-03-29 21:49:11] [INFO]  * Detected change in 'd:\\MIAOZI\\back-py\\models\\DBconnect.py', reloading
+[2021-03-29 21:49:11] [INFO]  * Restarting with stat
+[2021-03-29 21:49:13] [WARNING]  * Debugger is active!
+[2021-03-29 21:49:13] [INFO]  * Debugger PIN: 298-789-133
+[2021-03-29 21:49:13] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2021-03-29 21:50:01] [INFO]  * Detected change in 'd:\\MIAOZI\\back-py\\models\\DBconnect.py', reloading
+[2021-03-29 21:50:01] [INFO]  * Restarting with stat
+[2021-03-29 21:50:03] [WARNING]  * Debugger is active!
+[2021-03-29 21:50:03] [INFO]  * Debugger PIN: 298-789-133
+[2021-03-29 21:50:03] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2021-03-29 21:50:34] [INFO]  * Detected change in 'd:\\MIAOZI\\back-py\\control\\OPcontrol.py', reloading
+[2021-03-29 21:50:34] [INFO]  * Restarting with stat
+[2021-03-29 21:50:35] [WARNING]  * Debugger is active!
+[2021-03-29 21:50:35] [INFO]  * Debugger PIN: 298-789-133
+[2021-03-29 21:50:35] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2021-03-29 21:50:51] [INFO]  * Restarting with stat
+[2021-03-29 21:50:53] [WARNING]  * Debugger is active!
+[2021-03-29 21:50:53] [INFO]  * Debugger PIN: 298-789-133
+[2021-03-29 21:50:53] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2021-03-29 21:50:55] [INFO] 127.0.0.1 - - [29/Mar/2021 21:50:55] "[37mPOST /register HTTP/1.1[0m" 200 -
+[2021-03-29 21:51:02] [INFO] 127.0.0.1 - - [29/Mar/2021 21:51:02] "[37mPOST /register HTTP/1.1[0m" 200 -
