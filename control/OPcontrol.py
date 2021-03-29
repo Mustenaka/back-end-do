@@ -62,7 +62,7 @@ class OPcontrol:
             False - 不重复， True - 重复
         """
         db = DBconnect.DBconnect()
-        info = db.dbQuery_user_is_already(user_id)
+        info = db.dbQuery_user_id_is_already(user_id)
         if info == None:
             return False
         else:
@@ -81,7 +81,7 @@ class OPcontrol:
             False - 不重复， True - 重复
         """
         db = DBconnect.DBconnect()
-        info = db.dbQuery_user_is_already(user_name)
+        info = db.dbQuery_user_name_is_already(user_name)
         if info == None:
             return False
         else:
