@@ -8,3 +8,15 @@
 [2021-03-29 21:28:15] [INFO] 127.0.0.1 - - [29/Mar/2021 21:28:15] "[37mPOST /login HTTP/1.1[0m" 200 -
 [2021-03-29 21:28:27] [DEBUG] login - root and 123123
 [2021-03-29 21:28:28] [INFO] 127.0.0.1 - - [29/Mar/2021 21:28:28] "[37mPOST /login HTTP/1.1[0m" 200 -
+[2021-03-29 21:41:46] [INFO]  * Restarting with stat
+[2021-03-29 21:41:48] [WARNING]  * Debugger is active!
+[2021-03-29 21:41:48] [INFO]  * Debugger PIN: 298-789-133
+[2021-03-29 21:41:48] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2021-03-29 21:42:11] [INFO] 127.0.0.1 - - [29/Mar/2021 21:42:11] "[37mPOST /register HTTP/1.1[0m" 200 -
+[2021-03-29 21:43:05] [INFO] 127.0.0.1 - - [29/Mar/2021 21:43:05] "[37mPOST /register HTTP/1.1[0m" 200 -
+[2021-03-29 21:43:11] [INFO]  * Detected change in 'd:\\MIAOZI\\back-py\\main.py', reloading
+[2021-03-29 21:43:11] [INFO]  * Restarting with stat
+[2021-03-29 21:43:13] [WARNING]  * Debugger is active!
+[2021-03-29 21:43:13] [INFO]  * Debugger PIN: 298-789-133
+[2021-03-29 21:43:13] [INFO]  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2021-03-29 21:43:22] [INFO] 127.0.0.1 - - [29/Mar/2021 21:43:22] "[37mPOST /register HTTP/1.1[0m" 200 -

@@ -12,7 +12,7 @@ errorCodeinfo = [
     "You should use POST",
     "Can not get information, please recheck the input",
     "Wrong password or something else",
-    "can not register new account, please recheck.",
+    "can not register new account, please recheck your account name.",
     "You are not login in"
 ]
 
