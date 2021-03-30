@@ -327,6 +327,12 @@ class OPcontrol:
         最后根据用户请求写入user_info表中生成总数据记录
         再将数据写入titlenote_info表中做详细记录
         最后返回True or False表示回答正确与否
+
+        Args:
+            user_id 用户ID
+            tit_id 题目ID
+            answer 回答
+            user_note 用户笔记
         """
         dbTable = "titlenote_info"
         db = DBconnect.DBconnect()
