@@ -49,7 +49,7 @@ class OPcontrol:
         return dic
 
 
-    def __is_user_id_already(self, db, user_id):
+    def __is_already(self, db, user_id):
         """
         内部函数，用来判断该用户是否已经存在，该内部方法的调用时刻在于创建【用户ID】的时候进行判断
         （即使user_id生成8位随机数，但还是不排除有可能有重复）
@@ -61,40 +61,20 @@ class OPcontrol:
         Return
             False - 不重复， True - 重复
         """
-        #db = DBconnect.DBconnect()
-        info = db.dbQuery_user_id_is_already(user_id)
-        if info == None:
-            return False
-        else:
-            return True
-    
-    def __is_user_name_already(self, db, user_name):
-        """
-        内部函数，用来判断该用户是否已经存在，该内部方法的调用时刻在于创建【用户ID】的时候进行判断
-        （即使user_id生成8位随机数，但还是不排除有可能有重复）
-
-        Args:
-            db 数据库打开的指针
-            user_name 用户名称
-
-        Return
-            False - 不重复， True - 重复
-        """
-        #db = DBconnect.DBconnect()
-        info = db.dbQuery_user_name_is_already(user_name)
+        db = DBconnect.DBconnect()
+        info = db.dbQuery_user_is_already(user_id)
         if info == None:
             return False
         else:
             return True
          
 
-    # 注册 -  完善逻辑中 - 
+    # 等待重构 - ❌
     def register(self, user_name, user_pwd):
         """
         创建一个新用户, 通过传递进来的用户名和密码注册。
         自动生成一个8位随机数字的user_id，这个id将会是整个系统中用户的绝对唯一标识符
-        此外，也会对用户名进行重复性判断，不允许输入重复的用户名
-        同时，由于前端是无法获取到微信ID，只能作为页面提供方
+        此外，由于前端是无法获取到微信ID，只能作为页面提供方
         所以user_wx_id这个参数作废了，目前这个参数只能同user_id相同
 
         在旧的版本中，传入的参数是微信ID，可是微信的OpenID是无法通过前端获取的，只能由后端存储传递给前端，
@@ -115,18 +95,11 @@ class OPcontrol:
 
         """
         db = DBconnect.DBconnect()
-
-        bool_is_user_name_already = self.__is_user_name_already(db, user_name)
-        if bool_is_user_name_already:
-            return {"returnCode":"r0"}
-        
         new_user_id = str(random.randint(0,99999999)).zfill(8)
-        bool_is_already = self.__is_user_id_already(db,new_user_id) 
+        bool_is_already = self.__is_already(db,new_user_id) 
         while bool_is_already:
             new_user_id = str(random.randint(0,99999999)).zfill(8)
-            bool_is_already = self.__is_user_id_already(db,new_user_id)
-
-
+            bool_is_already = self.__is_already(db,new_user_id)
 
         # 插入数据库
         is_successful = db.dbInsert(
@@ -159,8 +132,9 @@ class OPcontrol:
             
     def get_chapter_all(self):
         """
-        内部测试API，获取全部的章节信息，返回一个字典
-        固定设置的就是四个大科目《数据结构》，《操作系统》，《计算机组成原理》，《计算机网络》
+        给管理员端获取的信息，一次性获取所有的章节表内容
+        关系： 科目 -> 章节 -> 题目
+        一次性全部获取方便做管理端的插入表格
         """
         dbTable = "chapters_info"
         db = DBconnect.DBconnect()
@@ -173,6 +147,46 @@ class OPcontrol:
                 "chapters_id":info[i][0],    # 章节编号
                 "subject_id":info[i][1],  # 属于哪本书的编号
                 "chapters_name":info[i][2]   # 该章节中文名称
+            }
+            dic.setdefault(pageNumber,dic_tmp)
+        return dic
+    
+    # 重要 - 管理端需要使用此内容
+    def get_title_all(self):
+        """
+        给管理端获取的信息，一次性获取全部的题目ID内容
+        关系： 科目 -> 章节 -> 题目
+        一次性获取全部信息方便管理端做好插入表格
+        """
+        dbTable = "title_info"
+        db = DBconnect.DBconnect()
+        info = db.dbQuery(dbTable)
+        dic = { }
+        for i in range(0,len(info)):
+            #题目编号我不希望从0开始
+            pageNumber = "t" + str(i+1) 
+            title_id = info[i][0]
+
+             #反向查询 ： 题目ID -> 章节ID 
+            chapters = db.dbQuery_chapter_by_title(title_id)
+            chapter_id = chapters[0][0]
+            print(chapter_id)
+            #反向查询 ： 章节ID -> 科目ID
+            subjects = db.dbQuery_subject_by_chapter(chapter_id)
+            subject_id = subjects[0][0]
+            print(subject_id)
+
+            dic_tmp = {
+                "title_id":title_id,        # 题目ID
+                "chapters_id": chapter_id,    # 章节ID
+                "subject_id": subject_id,     # 科目ID
+                "titleHead": info[i][1],      # 题目标题
+                "titleCont": info[i][2],      # 题目内容
+                "titleAnswer": info[i][3],   # 题目答案
+                "titleAnalysis": info[i][4],  # 题目分析
+                "titleAveracc": info[i][5],   # 题目平均正确率
+                "titlespaper": info[i][6],    # 题目出处
+                "specialNote": info[i][7],    # 特殊注解
             }
             dic.setdefault(pageNumber,dic_tmp)
         return dic
@@ -318,8 +332,9 @@ class OPcontrol:
         info = db.dbQuery_title_len(dbTable)
         return info
 
-    # 等待升级
-    def answerCorrectJudgment(self,user_id,tit_id,answer,user_note):
+
+    # 答题
+    def answerCorrectJudgment(self, user_id, tit_id, answer, user_note):
         """
         验证传递进来的题目内容，过程原理是：
         先提取题号对应的题目信息
@@ -327,34 +342,147 @@ class OPcontrol:
         最后根据用户请求写入user_info表中生成总数据记录
         再将数据写入titlenote_info表中做详细记录
         最后返回True or False表示回答正确与否
-
-        Args:
-            user_id 用户ID
-            tit_id 题目ID
-            answer 回答
-            user_note 用户笔记
         """
         dbTable = "titlenote_info"
         db = DBconnect.DBconnect()
+        # 查询题目正确答案
         info = db.dbQuery_title_according_to_title(str(tit_id))
+
+        # 获取正确答案 & 正确率，正确回答数，错误回答数量
         rightAnswer = info[0][3]
-        print(answer,rightAnswer)
+        titleAveracc = info[0][5]
+        titleRight = info[0][8]
+        titleWrong = info[0][9]
+
+        # 对比正确答案 - 计算出是否正确
+        print(answer, rightAnswer)
         isRight = False
         inpRight = "0"
         if str(answer) == str(rightAnswer):
             isRight = True
             inpRight = "1"
+            titleRight += 1
+        else:
+            titleWrong += 1
         # 更新用户回答总信息
-        db.dbUpdate_user_answer(isRight,user_id)
+        db.dbUpdate_user_answer(isRight, user_id)
+
+        # 生成平均正确率，并且将记录更新到题目表
+        titleAveracc = (titleRight) / (titleRight + titleWrong)
+        db.dbUpdate_title_info(str(tit_id), titleAveracc, titleRight, titleWrong)
+
         # 更新用户回答详细内容 - 记录题号和回答时间
         inputDataTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        db.dbInsert(dbTable,user_id,tit_id,inpRight,inputDataTime,user_note)
+        db.dbInsert(dbTable, user_id, tit_id, inpRight, inputDataTime, user_note)
         return isRight
         
 
 
+    # 验证管理员身份
+    def check_administrator(self, user_id):
+        """
+        输入用户ID，验证是否是管理员
+        """
+        dbTable = "user_info"
+        db = DBconnect.DBconnect()
+        # 查询题目正确答案
+        info = db.dbQuery_is_administrator(str(user_id))
+        if not info:
+            return False
+        if info[0][0] != 0:
+            return True
+        return False
+
+    # 插入新题目
+    def insert_new_title(self, li):
+        """
+        插入一条新的题目
+        Args：
+            li - 包含全部题目信息的list
+        
+        Returns：
+            插入成功，或者是插入失败
+        """
+        user_id = li[0]
+        title_id = li[1]
+        chapters_id = li[2]
+        titleHead = li[3]
+        titleCont = li[4]
+        titleAnswer = li[5]
+        titleAnalysis = li[6]
+        titlespaper = li[7]
+        specialNote = li[8]
+
+        db = DBconnect.DBconnect()
+        # 查询题目正确答案
+
+        dbTable = "titlenumber_info"
+        is_OK = db.dbInsert(dbTable, title_id, chapters_id)
+
+        dbTable = "title_info"
+        is_OK = db.dbInsert(dbTable,title_id,titleHead,titleCont,titleAnswer,titleAnalysis,0,titlespaper,specialNote,0,0)
+
+        if is_OK:
+            return True
+        else:
+            return False
+
+
+    # 插入新题目
+    def update_title(self, li):
+        """
+        插入一条新的题目
+        Args：
+            li - 包含全部题目信息的list
+        
+        Returns：
+            插入成功，或者是插入失败
+        """
+        user_id = li[0]
+        title_id = li[1]
+        chapters_id = li[2]
+        titleHead = li[3]
+        titleCont = li[4]
+        titleAnswer = li[5]
+        titleAnalysis = li[6]
+        titlespaper = li[7]
+        specialNote = li[8]
+
+        db = DBconnect.DBconnect()
+        # 查询题目正确答案
+
+        dbTable = "titlenumber_info"
+        is_OK = db.dbUpdate_signled(dbTable,"chaptersId",chapters_id,"titleId",title_id)
+
+        dbTable = "title_info"
+        is_OK = db.update_title_all(
+            dbTable,
+            title_id,
+            titleHead,
+            titleCont,
+            titleAnswer,
+            titleAnalysis,
+            titlespaper,
+            specialNote)
+
+        if is_OK:
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     op = OPcontrol()
-    k = op.answerCorrectJudgment("1001","2","硬时系统","这一道题记录点信息")
+    #k = op.answerCorrectJudgment("1001","2","硬时系统","这一道题记录点信息")
+    li = [
+        "10000002",
+        "4",
+        "2",
+        "填空题",
+        "请问1+1=？",
+        "2",
+        "1+1=2",
+        "1991",
+        "智商检测"
+    ]
+    k = op.update_title(li)
     print(k)
