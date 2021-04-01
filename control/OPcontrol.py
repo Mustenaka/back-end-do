@@ -426,7 +426,7 @@ class OPcontrol:
 
     def insert_new_chapter(self, chapters_id, subject_id, chapters_name):
         """
-        插入一个新的章节
+        插入一个新的章节，注意一个问题，数据库对于chapter使用了replace，所以是增加和修改合一了
         Args：
             li - 包含全部题目信息的list
 
