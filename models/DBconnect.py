@@ -30,6 +30,7 @@ class DBconnect:
         except e:
             print(e)
 
+    # 查询
     def dbQuery(self, dbTable):
         """
         数据库查询代码，将需要查询的表名传入
