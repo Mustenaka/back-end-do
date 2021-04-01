@@ -1,11 +1,11 @@
+import random
+import models.DBconnect as DBconnect
+import datetime
 import os
 import sys
 projectPath = os.path.abspath(os.path.join(os.getcwd()))
 sys.path.append(projectPath)
 
-import datetime
-import models.DBconnect as DBconnect
-import random
 
 class OPcontrol:
     """
@@ -13,10 +13,10 @@ class OPcontrol:
     对基本的数据库层代码进行调用，并进行一系列的逻辑处理，并且返回结果给API层
 
     """
+
     def __init__(self):
         # 对于数据库而言，不用长连接，怕长时间不操作还占用带宽
         pass
-    
 
     def check_login(self, user_name, user_pwd):
         """
@@ -25,7 +25,7 @@ class OPcontrol:
         Args:
             user_name 用户名
             user_pwd 用户密码
-        
+
         Returns
             一个字典，返回用户ID，用户名，和用户微信ID
         """
@@ -33,21 +33,20 @@ class OPcontrol:
         db = DBconnect.DBconnect()
         info = db.dbQuery_userLogin(user_name, user_pwd)
         if info == None:
-            dic = {"returnCode":"r0"}
+            dic = {"returnCode": "r0"}
         else:
             dic = {
-                "returnCode":"a0",
-                "user_id":info[0],
-                "user_name":info[1],
-                "user_pwd":info[2],
-                "user_wx_id":info[3],
-                "user_rightAnswer":info[4],
-                "user_wrongAnswer":info[5],
-                "isAdministrator":info[6],
+                "returnCode": "a0",
+                "user_id": info[0],
+                "user_name": info[1],
+                "user_pwd": info[2],
+                "user_wx_id": info[3],
+                "user_rightAnswer": info[4],
+                "user_wrongAnswer": info[5],
+                "isAdministrator": info[6],
             }
         print(dic)
         return dic
-
 
     def __is_already(self, db, user_id):
         """
@@ -67,9 +66,9 @@ class OPcontrol:
             return False
         else:
             return True
-         
 
     # 等待重构 - ❌
+
     def register(self, user_name, user_pwd):
         """
         创建一个新用户, 通过传递进来的用户名和密码注册。
@@ -83,7 +82,7 @@ class OPcontrol:
         Args:
             user_name 用户名
             user_pwd 用户密码
-        
+
         Returns:
             returnCode 正确返回a0，错误返回r0
             user_id 用户ID，通过随机数字生成
@@ -95,11 +94,11 @@ class OPcontrol:
 
         """
         db = DBconnect.DBconnect()
-        new_user_id = str(random.randint(0,99999999)).zfill(8)
-        bool_is_already = self.__is_already(db,new_user_id) 
+        new_user_id = str(random.randint(0, 99999999)).zfill(8)
+        bool_is_already = self.__is_already(db, new_user_id)
         while bool_is_already:
-            new_user_id = str(random.randint(0,99999999)).zfill(8)
-            bool_is_already = self.__is_already(db,new_user_id)
+            new_user_id = str(random.randint(0, 99999999)).zfill(8)
+            bool_is_already = self.__is_already(db, new_user_id)
 
         # 插入数据库
         is_successful = db.dbInsert(
@@ -111,7 +110,7 @@ class OPcontrol:
             0,
             0,
             0
-            )
+        )
         if is_successful:
             dic = {
                 "returnCode": "a0",
@@ -125,11 +124,10 @@ class OPcontrol:
             }
         else:
             dic = {
-                "returnCode":"r0"
+                "returnCode": "r0"
             }
         return dic
-            
-            
+
     def get_chapter_all(self):
         """
         给管理员端获取的信息，一次性获取所有的章节表内容
@@ -139,18 +137,18 @@ class OPcontrol:
         dbTable = "chapters_info"
         db = DBconnect.DBconnect()
         info = db.dbQuery(dbTable)
-        dic = { }
-        for i in range(0,len(info)):
-            #题目编号我不希望从0开始
-            pageNumber = "c" + str(i+1) 
+        dic = {}
+        for i in range(0, len(info)):
+            # 题目编号我不希望从0开始
+            pageNumber = "c" + str(i+1)
             dic_tmp = {
-                "chapters_id":info[i][0],    # 章节编号
-                "subject_id":info[i][1],  # 属于哪本书的编号
-                "chapters_name":info[i][2]   # 该章节中文名称
+                "chapters_id": info[i][0],    # 章节编号
+                "subject_id": info[i][1],  # 属于哪本书的编号
+                "chapters_name": info[i][2]   # 该章节中文名称
             }
-            dic.setdefault(pageNumber,dic_tmp)
+            dic.setdefault(pageNumber, dic_tmp)
         return dic
-    
+
     # 重要 - 管理端需要使用此内容
     def get_title_all(self):
         """
@@ -161,23 +159,23 @@ class OPcontrol:
         dbTable = "title_info"
         db = DBconnect.DBconnect()
         info = db.dbQuery(dbTable)
-        dic = { }
-        for i in range(0,len(info)):
-            #题目编号我不希望从0开始
-            pageNumber = "t" + str(i+1) 
+        dic = {}
+        for i in range(0, len(info)):
+            # 题目编号我不希望从0开始
+            pageNumber = "t" + str(i+1)
             title_id = info[i][0]
 
-             #反向查询 ： 题目ID -> 章节ID 
+            # 反向查询 ： 题目ID -> 章节ID
             chapters = db.dbQuery_chapter_by_title(title_id)
             chapter_id = chapters[0][0]
             print(chapter_id)
-            #反向查询 ： 章节ID -> 科目ID
+            # 反向查询 ： 章节ID -> 科目ID
             subjects = db.dbQuery_subject_by_chapter(chapter_id)
             subject_id = subjects[0][0]
             print(subject_id)
 
             dic_tmp = {
-                "title_id":title_id,        # 题目ID
+                "title_id": title_id,        # 题目ID
                 "chapters_id": chapter_id,    # 章节ID
                 "subject_id": subject_id,     # 科目ID
                 "titleHead": info[i][1],      # 题目标题
@@ -188,84 +186,81 @@ class OPcontrol:
                 "titlespaper": info[i][6],    # 题目出处
                 "specialNote": info[i][7],    # 特殊注解
             }
-            dic.setdefault(pageNumber,dic_tmp)
+            dic.setdefault(pageNumber, dic_tmp)
         return dic
-        
 
     def get_subject(self):
         """
         接下来的几段代码的逻辑均为： 科目ID --> 章节ID --> 题目ID --> 题目具体信息 --> 提交题目
         获取科目信息
-        
+
         Returns:
             返回科目编号，科目名称，科目介绍，目前固定只有四个科目
         """
         dbTable = "subject_info"
         db = DBconnect.DBconnect()
         info = db.dbQuery(dbTable)
-        dic = { }
-        for i in range(0,len(info)):
+        dic = {}
+        for i in range(0, len(info)):
             pageNumber = "s" + str(i+1)
             dic_tmp = {
-                "subject_id":info[i][0],    # 书本<科目>编号
-                "subject_name":info[i][1],  # 书本<科目>名称
-                "subject_brief":info[i][2]   # 书本<科目>介绍
+                "subject_id": info[i][0],    # 书本<科目>编号
+                "subject_name": info[i][1],  # 书本<科目>名称
+                "subject_brief": info[i][2]   # 书本<科目>介绍
             }
-            dic.setdefault(pageNumber,dic_tmp)
+            dic.setdefault(pageNumber, dic_tmp)
         return dic
 
-    
-    def get_chapter(self,sub_id):
+    def get_chapter(self, sub_id):
         """
         根据科目获取当前章节信息表
 
         Args:
             sub_id 科目ID
-        
+
         Returns:
             返回 章节编号 ，科目编号，该章节的中文名称
         """
         dbTable = "chapters_info"
         db = DBconnect.DBconnect()
         info = db.dbQuery_chapter_according_to_subject(str(sub_id))
-        dic = { }
-        for i in range(0,len(info)):
+        dic = {}
+        for i in range(0, len(info)):
             pageNumber = "c" + str(i+1)
             dic_tmp = {
-                "chapters_id":info[i][0],    # 章节编号
-                "subject_id":info[i][1],    # 科目编号
-                "chapters_name":info[i][2]   # 该章节中文名称
+                "chapters_id": info[i][0],    # 章节编号
+                "subject_id": info[i][1],    # 科目编号
+                "chapters_name": info[i][2]   # 该章节中文名称
             }
-            dic.setdefault(pageNumber,dic_tmp)
+            dic.setdefault(pageNumber, dic_tmp)
         return dic
 
-
-    def get_title(self,chp_id):
+    def get_title(self, chp_id):
         """
         根据章节获取当前题目ID表
 
         Args:
             chp_id 章节ID
-        
+
         Returns:
             返回 题目ID，章节ID
         """
         dbTable = "titlenumber_info"
         db = DBconnect.DBconnect()
         info = db.dbQuery_title_according_to_chapter(str(chp_id))
-        dic = { }
-        for i in range(0,len(info)):
+        dic = {}
+        for i in range(0, len(info)):
             pageNumber = "t" + str(i+1)
             dic_tmp = {
-                "title_id":info[i][0],    # 题目ID
-                "chapters_id":info[i][1],  # 章节ID
+                "title_id": info[i][0],    # 题目ID
+                "chapters_id": info[i][1],  # 章节ID
             }
-            dic.setdefault(pageNumber,dic_tmp)
+            dic.setdefault(pageNumber, dic_tmp)
         return dic
 
     # 根据题目获得详细信息
     # 说明
-    #   title_id:   输入的titleid  
+    #   title_id:   输入的titleid
     #   titleHead:   题目的标题
     #   titleCont:  题目的内容
     #   titleAnswer:    题目的答案（选择填空混合）
@@ -274,10 +269,10 @@ class OPcontrol:
     #   titlespaper:    题目来自的试卷
     #   specialNote:    特殊注解（一般没有为None）
 
-    def get_title_info(self,tit_id):
+    def get_title_info(self, tit_id):
         """
         根据题目ID获取题目的具体内容，包括获取到正确答案
-        
+
         Args:
             tit_id 章节ID
 
@@ -295,7 +290,7 @@ class OPcontrol:
         dbTable = "title_info"
         db = DBconnect.DBconnect()
         info = db.dbQuery_title_according_to_title(str(tit_id))
-        dic = { }
+        dic = {}
         '''
         # 原来是多组的形式返回，但是貌似一个ID只有一个信息，所以多组不需要了
         for i in range(0,len(info)):
@@ -312,17 +307,16 @@ class OPcontrol:
             }
             dic.setdefault(pageNumber,dic_tmp)
         '''
-        dic.setdefault("title_id",info[0][0])
-        dic.setdefault("titleHead",info[0][1])
-        dic.setdefault("titleCont",info[0][2])
-        dic.setdefault("titleAnswer",info[0][3])
-        dic.setdefault("titleAnalysis",info[0][4])
-        dic.setdefault("titleAveracc",info[0][5])
-        dic.setdefault("titlespaper",info[0][6])
-        dic.setdefault("specialNote",info[0][7])
+        dic.setdefault("title_id", info[0][0])
+        dic.setdefault("titleHead", info[0][1])
+        dic.setdefault("titleCont", info[0][2])
+        dic.setdefault("titleAnswer", info[0][3])
+        dic.setdefault("titleAnalysis", info[0][4])
+        dic.setdefault("titleAveracc", info[0][5])
+        dic.setdefault("titlespaper", info[0][6])
+        dic.setdefault("specialNote", info[0][7])
         return dic
-    
-    
+
     def get_title_len(self):
         """
         获取数据库中题目数量，将会用在随机生成题目的范围中
@@ -332,8 +326,8 @@ class OPcontrol:
         info = db.dbQuery_title_len(dbTable)
         return info
 
-
     # 答题
+
     def answerCorrectJudgment(self, user_id, tit_id, answer, user_note):
         """
         验证传递进来的题目内容，过程原理是：
@@ -369,16 +363,17 @@ class OPcontrol:
 
         # 生成平均正确率，并且将记录更新到题目表
         titleAveracc = (titleRight) / (titleRight + titleWrong)
-        db.dbUpdate_title_info(str(tit_id), titleAveracc, titleRight, titleWrong)
+        db.dbUpdate_title_info(str(tit_id), titleAveracc,
+                               titleRight, titleWrong)
 
         # 更新用户回答详细内容 - 记录题号和回答时间
         inputDataTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        db.dbInsert(dbTable, user_id, tit_id, inpRight, inputDataTime, user_note)
+        db.dbInsert(dbTable, user_id, tit_id,
+                    inpRight, inputDataTime, user_note)
         return isRight
-        
-
 
     # 验证管理员身份
+
     def check_administrator(self, user_id):
         """
         输入用户ID，验证是否是管理员
@@ -387,6 +382,7 @@ class OPcontrol:
         db = DBconnect.DBconnect()
         # 查询题目正确答案
         info = db.dbQuery_is_administrator(str(user_id))
+        print(info)
         if not info:
             return False
         if info[0][0] != 0:
@@ -399,7 +395,7 @@ class OPcontrol:
         插入一条新的题目
         Args：
             li - 包含全部题目信息的list
-        
+
         Returns：
             插入成功，或者是插入失败
         """
@@ -420,21 +416,38 @@ class OPcontrol:
         is_OK = db.dbInsert(dbTable, title_id, chapters_id)
 
         dbTable = "title_info"
-        is_OK = db.dbInsert(dbTable,title_id,titleHead,titleCont,titleAnswer,titleAnalysis,0,titlespaper,specialNote,0,0)
+        is_OK = db.dbInsert(dbTable, title_id, titleHead, titleCont,
+                            titleAnswer, titleAnalysis, 0, titlespaper, specialNote, 0, 0)
 
         if is_OK:
             return True
         else:
             return False
 
+    def insert_new_chapter(self, chapters_id, subject_id, chapters_name):
+        """
+        插入一个新的章节
+        Args：
+            li - 包含全部题目信息的list
 
-    # 插入新题目
+        Returns：
+            插入成功，或者是插入失败
+        """
+        dbTable = "chapters_info"
+        db = DBconnect.DBconnect()
+        is_OK = db.dbInsert(dbTable, chapters_id,
+                            subject_id, chapters_name)
+        if is_OK:
+            return True
+        else:
+            return False
+
     def update_title(self, li):
         """
         插入一条新的题目
         Args：
             li - 包含全部题目信息的list
-        
+
         Returns：
             插入成功，或者是插入失败
         """
@@ -452,7 +465,8 @@ class OPcontrol:
         # 查询题目正确答案
 
         dbTable = "titlenumber_info"
-        is_OK = db.dbUpdate_signled(dbTable,"chaptersId",chapters_id,"titleId",title_id)
+        is_OK = db.dbUpdate_signled(
+            dbTable, "chaptersId", chapters_id, "titleId", title_id)
 
         dbTable = "title_info"
         is_OK = db.update_title_all(
@@ -470,12 +484,13 @@ class OPcontrol:
         else:
             return False
 
+
 if __name__ == '__main__':
     op = OPcontrol()
     #k = op.answerCorrectJudgment("1001","2","硬时系统","这一道题记录点信息")
     li = [
         "10000002",
-        "4",
+        "5",
         "2",
         "填空题",
         "请问1+1=？",
@@ -484,5 +499,5 @@ if __name__ == '__main__':
         "1991",
         "智商检测"
     ]
-    k = op.update_title(li)
+    k = op.insert_new_title(li)
     print(k)

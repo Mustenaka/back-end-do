@@ -36,16 +36,15 @@ app.permanent_session_lifetime = timedelta(minutes = 15)
 '''
 
 
-@app.route('/', methods = ['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     """
     根目录-首页，无论任何方法都可以返回一个英文的测试json
     """
     # 首页
     return jsonify({
-        "index" : "There is no index page, just the json."
+        "index": "There is no index page, just the json."
     })
-
 
 
 # 检查登陆状态
@@ -57,7 +56,7 @@ def check_login():
 
     Args:
         user_id  用户ID
-    
+
     Returns:
         错误返回错误码，成功返回登陆情况
     """
@@ -65,15 +64,14 @@ def check_login():
         return jsonify({
             "success": config.successCode[3],
             "success_info": config.successCodeinfo[3],
-            "info":'Logged in as %s' % escape(session['user_id'])
+            "info": 'Logged in as %s' % escape(session['user_id'])
         })
-        #return 'Logged in as %s' % escape(session['user_id'])
-    #return 'You are not logged in'
+        # return 'Logged in as %s' % escape(session['user_id'])
+    # return 'You are not logged in'
     return jsonify({
         "error": config.errorCode[4],
         "error_info": config.errorCodeinfo[4]
     })
-
 
 
 # 彩蛋
@@ -86,7 +84,6 @@ def miaozi_hello():
     return jsonify({
         "Easter_eggs": miaozi
     })
-
 
 
 # 登陆 - 待重写
@@ -113,7 +110,7 @@ def Login_():
             op = OPcontrol.OPcontrol()
             returnDic = op.check_login(user_name, user_pwd)
 
-            # 判断登陆是否成功 - r0 登陆失败 , a0 登陆成功 
+            # 判断登陆是否成功 - r0 登陆失败 , a0 登陆成功
             if returnDic['returnCode'] == "r0":
                 # 登陆失败，抛出错误代码
                 return jsonify({
@@ -127,7 +124,7 @@ def Login_():
                 user_rightAnswer = returnDic['user_rightAnswer']
                 user_wrongAnswer = returnDic['user_wrongAnswer']
                 isAdministrator = returnDic['isAdministrator']
-                
+
                 # 登陆成功 - 将user_id 添加进入session
                 session["user_id"] = user_id
 
@@ -154,7 +151,6 @@ def Login_():
         })
 
 
-
 # 登出
 @app.route('/logout', methods=['GET', 'POST'])
 def Logout_():
@@ -172,21 +168,20 @@ def Logout_():
             session.pop('user_id', None)
             #print(session.get('user_id'), session.pop('user_id', None))
             return jsonify({
-                    "user_id": user_id,
-                    "success": config.successCode[1],
-                    "success_info": config.successCodeinfo[1]
-                })
+                "user_id": user_id,
+                "success": config.successCode[1],
+                "success_info": config.successCodeinfo[1]
+            })
         except:
             return jsonify({
                 "error": config.errorCode[1],
                 "error_info": config.errorCodeinfo[1]
             })
-    else :
+    else:
         return jsonify({
             "error": config.errorCode[0],
             "error_info": config.errorCodeinfo[0]
         })
-
 
 
 # 注册
@@ -214,21 +209,21 @@ def Register_():
             returnDic = op.register(user_name, user_pwd)
             if returnDic['returnCode'] == "a0":
                 return jsonify({
-                        "user_id": returnDic['user_id'],
-                        "user_name": returnDic['user_name'],
-                        "user_pwd": returnDic['user_pwd'],
-                        "user_wx_id": returnDic['user_wx_id'],
-                        "user_rightAnswer": returnDic['user_rightAnswer'],
-                        "user_wrongAnswer": returnDic['user_wrongAnswer'],
-                        "isAdministrator": returnDic['isAdministrator'],
-                        "success": config.successCode[2],
-                        "success_info": config.successCodeinfo[2]
-                    })
+                    "user_id": returnDic['user_id'],
+                    "user_name": returnDic['user_name'],
+                    "user_pwd": returnDic['user_pwd'],
+                    "user_wx_id": returnDic['user_wx_id'],
+                    "user_rightAnswer": returnDic['user_rightAnswer'],
+                    "user_wrongAnswer": returnDic['user_wrongAnswer'],
+                    "isAdministrator": returnDic['isAdministrator'],
+                    "success": config.successCode[2],
+                    "success_info": config.successCodeinfo[2]
+                })
             elif returnDic['returnCode'] == "r0":
                 return jsonify({
-                        "error": config.errorCode[3],
-                        "error_info": config.errorCodeinfo[3]
-                    })
+                    "error": config.errorCode[3],
+                    "error_info": config.errorCodeinfo[3]
+                })
         except:
             return jsonify({
                 "error": config.errorCode[1],
@@ -239,7 +234,6 @@ def Register_():
             "error": config.errorCode[0],
             "error_info": config.errorCodeinfo[0]
         })
-
 
 
 @app.route('/getChaptersall', methods=['GET', 'POST'])
@@ -266,7 +260,7 @@ def get_chapter_all():
         get_dic.setdefault("success_info", config.successCodeinfo[5])
         print(get_dic)
         return jsonify(get_dic)
-        #return jsonify(json.dumps(get_dic,f, indent = 4, separators = (',', ': ')))
+        # return jsonify(json.dumps(get_dic,f, indent = 4, separators = (',', ': ')))
     except:
         return jsonify({
             "error": config.errorCode[1],
@@ -274,13 +268,12 @@ def get_chapter_all():
         })
 
 
-
 @app.route('/getTitlesall', methods=['GET', 'POST'])
 def get_title_all():
     """
     获取全部题目信息，管理员查询用api
     API: http://localhost/getTitlesall
-    
+
     Returns:
         返回数据库中全部的题目信息
     """
@@ -299,11 +292,95 @@ def get_title_all():
         get_dic.setdefault("success_info", config.successCodeinfo[6])
         print(get_dic)
         return jsonify(get_dic)
-        #return jsonify(json.dumps(get_dic,f, indent = 4, separators = (',', ': ')))
+        # return jsonify(json.dumps(get_dic,f, indent = 4, separators = (',', ': ')))
     except:
         return jsonify({
             "error": config.errorCode[1],
             "error_info": config.errorCodeinfo[1]
+        })
+
+
+# 提交新章节API
+@app.route('/setnewchapter', methods=['GET', 'POST'])
+def set_new_chapter():
+    """
+    新增一个章节，管理员才能使用的API。
+    首先进行是否登录验证，管理员身份验证，其次进行传入信息完整性验证，随后传递给OPcontrol层进行操作
+    API: http://localhost/setnewchapter
+
+    Args:
+        user_id        # 用户ID
+        chapters_id    # 章节ID
+        subject_id     # 科目ID
+        chapters_name  # 章节介绍
+
+
+    Returns:
+        成功上传；
+        失败上传
+            原因1.章节ID提交重复
+            原因2.缺少内容
+            原因3.使用GET请求
+            原因4.传输过程有误
+    """
+    if request.method == 'POST':
+        try:
+            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
+            user = session.get('user_id')
+            if not user:
+                return jsonify({
+                    "error": config.errorCode[4],
+                    "error_info": config.errorCodeinfo[4]
+                })
+            # 输入筛查
+            user_id = str(request.json.get('user_id'))
+            subject_id = str(request.json.get('subject_id'))
+            chapters_id = str(request.json.get('chapters_id'))
+            chapters_name = str(request.json.get('chapters_name'))
+
+            li = [user_id, subject_id, chapters_id, chapters_name]
+            if None in li:
+                return jsonify({
+                    "error": config.errorCode[5],
+                    "error_info": config.errorCodeinfo[5]
+                })
+
+            op = OPcontrol.OPcontrol()
+
+            # 验证该账户是否是管理员账户
+            is_administrator = op.check_administrator(user_id)
+            print(is_administrator)
+            if is_administrator == False:
+                return jsonify({
+                    "error": config.errorCode[6],
+                    "error_info": config.errorCodeinfo[6]
+                })
+
+            # 传递全部参数进行插入
+            is_insert_successful = op.insert_new_chapter(
+                 chapters_id, subject_id, chapters_name)
+            log.debug("insert or update new chapter")
+
+            if is_insert_successful:
+                return jsonify({
+                    "success": config.successCode[11],
+                    "success_info": config.successCodeinfo[11]
+                })
+            else:
+                return jsonify({
+                    "error": config.errorCode[8],
+                    "error_info": config.errorCodeinfo[8]
+                })
+        except:
+            return jsonify({
+                "error": config.errorCode[1],
+                "error_info": config.errorCodeinfo[1]
+            })
+
+    else:
+        return jsonify({
+            "error": config.errorCode[0],
+            "error_info": config.errorCodeinfo[0]
         })
 
 
@@ -354,11 +431,12 @@ def set_new_title():
             titlespaper = str(request.json.get('titlespaper'))
             specialNote = str(request.json.get('specialNote'))
 
-            li = [user_id, title_id, chapters_id, titleHead, titleCont, titleAnswer, titleAnalysis, titlespaper, specialNote]
-            if "" in li:
+            li = [user_id, title_id, chapters_id, titleHead, titleCont,
+                  titleAnswer, titleAnalysis, titlespaper, specialNote]
+            if None in li:
                 return jsonify({
                     "error": config.errorCode[5],
-                    "error_info": config.errorCodeinfo[5] 
+                    "error_info": config.errorCodeinfo[5]
                 })
 
             op = OPcontrol.OPcontrol()
@@ -368,7 +446,7 @@ def set_new_title():
             if is_administrator == False:
                 return jsonify({
                     "error": config.errorCode[6],
-                    "error_info": config.errorCodeinfo[6] 
+                    "error_info": config.errorCodeinfo[6]
                 })
 
             # 传递全部参数进行插入
@@ -381,7 +459,7 @@ def set_new_title():
             else:
                 return jsonify({
                     "error": config.errorCode[7],
-                    "error_info": config.errorCodeinfo[7] 
+                    "error_info": config.errorCodeinfo[7]
                 })
         except:
             return jsonify({
@@ -394,6 +472,7 @@ def set_new_title():
             "error": config.errorCode[0],
             "error_info": config.errorCodeinfo[0]
         })
+
 
 # 修改题目API
 @app.route('/updatetitle', methods=['GET', 'POST'])
@@ -442,11 +521,12 @@ def update_title():
             titlespaper = str(request.json.get('titlespaper'))
             specialNote = str(request.json.get('specialNote'))
 
-            li = [user_id, title_id, chapters_id, titleHead, titleCont, titleAnswer, titleAnalysis, titlespaper, specialNote]
-            if "" in li:
+            li = [user_id, title_id, chapters_id, titleHead, titleCont,
+                  titleAnswer, titleAnalysis, titlespaper, specialNote]
+            if None in li:
                 return jsonify({
                     "error": config.errorCode[5],
-                    "error_info": config.errorCodeinfo[5] 
+                    "error_info": config.errorCodeinfo[5]
                 })
 
             op = OPcontrol.OPcontrol()
@@ -456,20 +536,20 @@ def update_title():
             if is_administrator == False:
                 return jsonify({
                     "error": config.errorCode[6],
-                    "error_info": config.errorCodeinfo[6] 
+                    "error_info": config.errorCodeinfo[6]
                 })
 
             # 传递全部参数进行插入
             is_update_successful = op.update_title(li)
             if is_update_successful:
                 return jsonify({
-                    "success": config.successCode[5],
-                    "success_info": config.successCodeinfo[5]
+                    "success": config.successCode[10],
+                    "success_info": config.successCodeinfo[10]
                 })
             else:
                 return jsonify({
                     "error": config.errorCode[7],
-                    "error_info": config.errorCodeinfo[7] 
+                    "error_info": config.errorCodeinfo[7]
                 })
         except:
             return jsonify({
@@ -482,8 +562,9 @@ def update_title():
             "error": config.errorCode[0],
             "error_info": config.errorCodeinfo[0]
         })
-  
-# 获取全部科目信息 
+
+
+# 获取全部科目信息
 @app.route('/getsubject', methods=['GET', 'POST'])
 def get_subject():
     """
@@ -513,7 +594,6 @@ def get_subject():
             "error": config.errorCode[1],
             "error_info": config.errorCodeinfo[1]
         })
-
 
 
 # 查询章节信息
@@ -564,7 +644,6 @@ def get_chapters_from_sub():
         })
 
 
-
 # 查询题目信息
 @app.route('/gettitlefromchp', methods=['GET', 'POST'])
 def get_title_from_chp():
@@ -612,8 +691,6 @@ def get_title_from_chp():
         })
 
 
-
-
 # 获取题目详细信息
 @app.route('/gettitleinfo', methods=['GET', 'POST'])
 def get_titleInfo():
@@ -623,7 +700,7 @@ def get_titleInfo():
 
     Args:
         title_id 题目ID
-    
+
     Returns:
         title_id:   输入的题目ID 
         titleHead:   题目的标题
@@ -665,7 +742,6 @@ def get_titleInfo():
         })
 
 
-
 # 同上，随机获取题目信息
 @app.route('/getrandomtitleinfo', methods=['GET', 'POST'])
 def get_randomTitleInfo():
@@ -686,7 +762,7 @@ def get_randomTitleInfo():
             # 验证账户密码正确性 - 先获取长度，再随机生成
             op = OPcontrol.OPcontrol()
             table_length = op.get_title_len()
-            tit_id = random.randint(1,table_length-1)
+            tit_id = random.randint(1, table_length-1)
 
             get_dic = op.get_title_info(str(tit_id))
             get_dic.setdefault("success", config.successCode[6])
@@ -705,8 +781,6 @@ def get_randomTitleInfo():
         })
 
 
-
-
 # 提交答案
 @app.route('/submitanswer', methods=['GET', 'POST'])
 def submit_answer():
@@ -719,7 +793,7 @@ def submit_answer():
         user_id 用户ID
         answer 用户回答
         user_note 用户注解
-    
+
     Returns:
         title_id:   输入的题目ID 
         titleHead:   题目的标题
@@ -745,11 +819,12 @@ def submit_answer():
             user_id = str(request.json.get('user_id'))
             answer = str(request.json.get('answer'))
             user_note = str(request.json.get('user_note'))
-            
+
             # 调用answerCorrectJudgment获取正确与否
             op = OPcontrol.OPcontrol()
 
-            isRight = op.answerCorrectJudgment(user_id,tit_id,answer,user_note)
+            isRight = op.answerCorrectJudgment(
+                user_id, tit_id, answer, user_note)
             #7 - wrong ; 8 - right
             if isRight:
                 return jsonify({
@@ -773,8 +848,6 @@ def submit_answer():
         })
 
 
-
-
 # 获取个人签到信息
 # 待补充
 @app.route('/getpersonalsignin', methods=['GET', 'POST'])
@@ -783,7 +856,6 @@ def get_PersonalSignin(test):
     代码好像不知道在哪里被give up了
     """
     pass
-
 
 
 if __name__ == '__main__':
