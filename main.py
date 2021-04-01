@@ -300,6 +300,8 @@ def get_title_all():
         })
 
 
+
+
 # 提交新章节API
 @app.route('/setnewchapter', methods=['GET', 'POST'])
 def set_new_chapter():
