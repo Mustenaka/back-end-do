@@ -98,6 +98,53 @@ class DBconnect:
             returnList.append(r)
         return returnList
     
+    # 特殊查询 - 反向查询
+    # 根据 title 编号查询该编号下的 chapter 编号
+    def dbQuery_chapter_by_title(self,tit_id):
+        """
+        根据 title 编号反向查询该编号下的 chapter 编号
+
+        Args：
+            tit_id 需要查询的 题目ID
+
+        Returns:
+            返回题目列表
+
+        """
+        cur = self.cur
+        dbTable = "titlenumber_info"
+        sql = "SELECT chaptersId FROM "+dbTable +" WHERE titleId='"+tit_id+"'"
+        print(sql)
+        cur.execute(sql)
+        returnList = []
+        for r in cur:
+            returnList.append(r)
+        return returnList
+
+
+    # 特殊查询 - 反向查询
+    # 根据 chapter 编号查询该编号下的 subject 编号
+    def dbQuery_subject_by_chapter(self,chp_id):
+        """
+        根据 chapter 编号反向查询该编号下的 subject 编号
+
+        Args：
+            chp_id 需要查询的 章节ID
+
+        Returns:
+            返回题目列表
+
+        """
+        cur = self.cur
+        dbTable = "chapters_info"
+        sql = "SELECT subjectId FROM "+dbTable +" WHERE chaptersId='"+chp_id+"'"
+        print(sql)
+        cur.execute(sql)
+        returnList = []
+        for r in cur:
+            returnList.append(r)
+        return returnList
+    
     # 特殊查询 - 
     # 根据 title 编号查询该编号下的 title 的详细信息
     def dbQuery_title_according_to_title(self,tit_id):
@@ -143,6 +190,8 @@ class DBconnect:
     def dbQuery_userLogin(self, user_name ,user_pwd):
         """
         通过用户名密码进行登陆判断，准备改成使用用户账户名和密码登陆的方式
+        Update:
+            已修改为用户名和密码的登录方式。
 
         Args:
             user_name 用户名
@@ -169,7 +218,7 @@ class DBconnect:
             return r
 
 
-    def dbQuery_user_id_is_already(self, user_id):
+    def dbQuery_user_is_already(self,user_id):
         """
         判断一个用户ID是否已经存在了，在注册的时候使用
 
@@ -196,34 +245,29 @@ class DBconnect:
         # 返回第一个合适的信息 - 也只有一个合适的信息
         for r in cur:
             return r
-
-    def dbQuery_user_name_is_already(self, user_name):
+    
+    # 特殊查询 
+    # 查询一个账户是否是管理员
+    def dbQuery_is_administrator(self, user_id):
         """
-        判断一个用户ID是否已经存在了，在注册的时候使用
+        查询一个用户是不是管理员
 
-        Args:
-            user_name 用户名
+        Args：
+            user_id 用户ID
 
         Returns:
-            返回查询到的user_id内容
+            返回题目列表
 
         """
-        conn = self.conn
         cur = self.cur
         dbTable = "user_info"
-        sql  = "SELECT * FROM "+dbTable+" WHERE userName='"+user_name+"'"
+        sql = "SELECT isAdministrator FROM "+dbTable +" WHERE userId='"+user_id+"'"
         print(sql)
-        try:
-            cur.execute(sql)
-            conn.commit()
-        except Exception as e:
-            print("操作异常：%s"%str(e))
-            #错误回滚
-            conn.rollback()
-            return e
-        # 返回第一个合适的信息 - 也只有一个合适的信息
+        cur.execute(sql)
+        returnList = []
         for r in cur:
-            return r
+            returnList.append(r)
+        return returnList
 
 
     def dbDelete(self,dbTable,needId,inputId):
@@ -275,7 +319,7 @@ class DBconnect:
             #sql = "INSERT INTO "+dbTable+" VALUES('{0}','{1}','{2}',str_to_date('{3}','%%Y-%%m-%%d %%H:%%i:%%s'),'{4}');".format(*args)
             sql = "INSERT INTO "+dbTable+" VALUES('{0}','{1}','{2}','{3}','{4}');".format(*args)
         elif dbTable == "title_info":
-            sql = "INSERT INTO "+dbTable+" VALUES(%s,%s,%s,%s,%s,%s,%s,%s);"
+            sql = "INSERT INTO "+dbTable+" VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
         elif dbTable == "subject_info":
             sql = "INSERT INTO "+dbTable+" VALUES(%s,%s,%s);"
         elif dbTable == "load_info":
@@ -322,6 +366,32 @@ class DBconnect:
             conn.rollback()
 
 
+    def dbUpdate_title_info(self, title_id, titleAveracc, titleRight, titleWrong):
+        """
+        更新题目表中的正确与否的记录，将数据写入titlenote_info表
+        会自动生成一个responTime信息
+
+        Args:
+            user_id 用户ID
+            title_id 标题ID
+            isRight 是否正确
+            personNote
+        """
+        conn = self.conn
+        cur = self.cur
+        sql = "update HHM.title_info set titleAveracc=" + titleAveracc + ",titleRight=" + titleRight + "titleWrong=" + titleWrong + " where titleId='" + title_id + "'"
+        print(sql)
+        try:
+            cur.execute(sql)
+            conn.commit()
+        except Exception as e:
+            print("操作异常：%s"%str(e))
+            #错误回滚
+            conn.rollback()
+
+
+
+
     # 测试更新、修改代码 - 完成
     # 封装更新，修改代码 - 完成
     # dbTable 表名称 -  needValue 需要修改的值名 - inputValue 需要修改的值 - needId 查询的ID名 - inputId 查询的ID具体内容
@@ -342,10 +412,44 @@ class DBconnect:
         try:
             cur.execute(sql)
             conn.commit()
+            return True
         except Exception as e:
             print("操作异常：%s"%str(e))
             #错误回滚
             conn.rollback()
+            return False
+
+    def update_title_all(self, dbTable, title_id, titleHead, titleCont, titleAnswer, titleAnalysis, titlespaper, specialNote):
+        """
+        对数据库中题目表中的题目内容进行修改 - 但是不修改答题数量，以及正确率等内容，这些东西能够被修改就会有作弊嫌疑
+
+        Args：
+            dbTable 需要修改的题目表
+            title_id 题目ID
+            titleHead 题目标题
+            titleCont 题目内容
+            titleAnswer 题目答案
+            titleAnalysis 题目分析
+            titlespaper 题目出处
+            specialNote 特殊注解
+
+        Returns:
+            True - 成功更新
+            False - 失败更新
+        """
+        conn = self.conn
+        cur = self.cur
+        sql = "UPDATE HHM.title_info SET titleHead='"+ titleHead +"',titleCont='"+ titleCont +"',titleAnswer='"+ titleAnswer +"',titleAnalysis='"+ titleAnalysis +"',titleIspaper='"+ titlespaper +"',specialNote='"+ specialNote +"' WHERE titleId='"+ title_id +"'"
+        print(sql)
+        try:
+            cur.execute(sql)
+            conn.commit()
+            return True
+        except Exception as e:
+            print("操作异常：%s"%str(e))
+            #错误回滚
+            conn.rollback()
+            return False
 
     
     def dbUpdate_all(self,dbTable):
