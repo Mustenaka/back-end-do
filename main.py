@@ -361,8 +361,7 @@ def set_new_chapter():
             # 传递全部参数进行插入
             is_insert_successful = op.insert_new_chapter(
                  chapters_id, subject_id, chapters_name)
-            log.debug("insert or update new chapter")
-
+            print("insert or update new chapter")
             if is_insert_successful:
                 return jsonify({
                     "success": config.successCode[11],
@@ -455,8 +454,8 @@ def set_new_title():
             is_insert_successful = op.insert_new_title(li)
             if is_insert_successful:
                 return jsonify({
-                    "success": config.successCode[5],
-                    "success_info": config.successCodeinfo[5]
+                    "success": config.successCode[10],
+                    "success_info": config.successCodeinfo[10]
                 })
             else:
                 return jsonify({
@@ -564,6 +563,15 @@ def update_title():
             "error": config.errorCode[0],
             "error_info": config.errorCodeinfo[0]
         })
+
+
+
+# 删除API
+@app.route('/removetitle', methods=['GET', 'POST'])
+def remove_title():
+    pass
+
+
 
 
 # 获取全部科目信息
