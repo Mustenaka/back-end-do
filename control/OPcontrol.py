@@ -437,6 +437,7 @@ class OPcontrol:
         db = DBconnect.DBconnect()
         is_OK = db.dbInsert(dbTable, chapters_id,
                             subject_id, chapters_name)
+        print(is_OK)
         if is_OK:
             return True
         else:
