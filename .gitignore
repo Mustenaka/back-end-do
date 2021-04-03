@@ -2,5 +2,5 @@
 control/__pycache__/*
 models/__pycache__/*
 Log/__pycache__/*
-logs/*
 routes/__pycache__/*
+logs/*
