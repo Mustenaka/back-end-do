@@ -290,10 +290,12 @@ class DBconnect:
         try:
             cur.execute(sql)
             conn.commit()
+            return True
         except Exception as e:
             print("操作异常：%s" % str(e))
             # 错误回滚
             conn.rollback()
+            return False
 
     def dbInsert(self, dbTable, *args):
         """
