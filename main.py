@@ -637,7 +637,7 @@ def remove_title():
         })
 
 
-# 删除API
+# 删除章节API
 @app.route('/removechapter', methods=['GET', 'POST'])
 def remove_chapter():
     """
