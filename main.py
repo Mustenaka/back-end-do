@@ -481,7 +481,7 @@ def set_new_title():
 @app.route('/updatetitle', methods=['GET', 'POST'])
 def update_title():
     """
-    修改一个已经存在的，管理员才能使用的API。
+    修改一个已经存在的题目，管理员才能使用的API。
     首先进行是否登录验证，管理员身份验证，其次进行传入信息完整性验证，随后传递给OPcontrol层进行操作
     API: http://localhost/updatetitle
 
@@ -571,7 +571,77 @@ def update_title():
 # 删除API
 @app.route('/removetitle', methods=['GET', 'POST'])
 def remove_title():
-    pass
+    """
+    删除一个已经存在的题目，管理员才能使用的API。
+    首先进行是否登录验证，管理员身份验证，其次进行传入信息完整性验证，随后传递给OPcontrol层进行操作
+    API: http://localhost/updatetitle
+
+    Args:
+        user_id        # 用户ID
+        title_id       # 题目ID
+
+    Returns:
+        成功上传；
+        失败上传
+            原因1.题目ID提交重复
+            原因2.缺少内容
+            原因3.使用GET请求
+            原因4.传输过程有误
+    """
+    if request.method == 'POST':
+        try:
+            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
+            user = session.get('user_id')
+            if not user:
+                return jsonify({
+                    "error": config.errorCode[4],
+                    "error_info": config.errorCodeinfo[4]
+                })
+            # 输入筛查
+            user_id = str(request.json.get('user_id'))
+            title_id = str(request.json.get('title_id'))
+
+            li = [user_id, title_id, chapters_id, titleHead, titleCont,
+                  titleAnswer, titleAnalysis, titlespaper, specialNote]
+            if None in li:
+                return jsonify({
+                    "error": config.errorCode[5],
+                    "error_info": config.errorCodeinfo[5]
+                })
+
+            op = OPcontrol.OPcontrol()
+
+            # 验证该账户是否是管理员账户
+            is_administrator = op.check_administrator(user_id)
+            if is_administrator == False:
+                return jsonify({
+                    "error": config.errorCode[6],
+                    "error_info": config.errorCodeinfo[6]
+                })
+
+            # 传递全部参数进行插入
+            is_update_successful = op.update_title(li)
+            if is_update_successful:
+                return jsonify({
+                    "success": config.successCode[10],
+                    "success_info": config.successCodeinfo[10]
+                })
+            else:
+                return jsonify({
+                    "error": config.errorCode[7],
+                    "error_info": config.errorCodeinfo[7]
+                })
+        except:
+            return jsonify({
+                "error": config.errorCode[1],
+                "error_info": config.errorCodeinfo[1]
+            })
+
+    else:
+        return jsonify({
+            "error": config.errorCode[0],
+            "error_info": config.errorCodeinfo[0]
+        })
 
 
 
