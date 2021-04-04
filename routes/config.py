@@ -8,7 +8,9 @@ errorCode = [
     "5",
     "6",
     "7",
-    "8"
+    "8",
+    "9",
+    "10"
 ]
 
 # 详细错误信息
@@ -21,7 +23,9 @@ errorCodeinfo = [
     "Missing the necessary incoming parameters.",
     "you are not administrator.",
     "failed to insert new title. please recheck the title_id is repeated.",
-    "failed to insert new chapter. please recheck the chapters_id is repeated."
+    "failed to insert new chapter. please recheck the chapters_id is repeated.",
+    "failed to remove title from title_id, plz rechack",
+    "failed to remove chapter from chapters_id, plz recheck"
 ]
 
 # 成功代码
@@ -38,6 +42,8 @@ successCode = [
     "9",
     "10",
     "11",
+    "12",
+    "13"
 ]
 
 # 成功详细信息
@@ -53,5 +59,7 @@ successCodeinfo = [
     "success, and answer is right",
     "success daily attendance",
     "success create or update new title",
-    "success create or update new chapter"
+    "success create or update new chapter",
+    "success remove title",
+    "success remove chapter"
 ]
