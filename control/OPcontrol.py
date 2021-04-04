@@ -484,6 +484,32 @@ class OPcontrol:
             return True
         else:
             return False
+    
+
+
+    def remove_title(self, title_id):
+        """
+        输入一个title_id标题ID，删除数据库表中title_info表对应的内容
+        """
+        dbTable = "title_info"
+        needName = "titleId"
+        #print("2222222222222================")
+        db = DBconnect.DBconnect()
+        is_OK = db.dbDelete(
+            dbTable, needName, title_id)
+        print(is_OK)
+        return is_OK
+
+    def remove_chapter(self, chapter_id):
+        """
+        输入一个chapter_id 章节ID，删除数据库中章节表中对应的内容
+        """
+        dbTable = "chapters_info"
+        needName = "chaptersId"
+        db = DBconnect.DBconnect()
+        is_OK = db.dbDelete(
+            dbTable, needName, chapter_id)
+        return is_OK
 
 
 if __name__ == '__main__':
