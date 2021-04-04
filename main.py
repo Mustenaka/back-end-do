@@ -236,6 +236,7 @@ def Register_():
         })
 
 
+# 获取全部章节
 @app.route('/getChaptersall', methods=['GET', 'POST'])
 def get_chapter_all():
     """
@@ -268,6 +269,7 @@ def get_chapter_all():
         })
 
 
+# 获取全部题目
 @app.route('/getTitlesall', methods=['GET', 'POST'])
 def get_title_all():
     """
