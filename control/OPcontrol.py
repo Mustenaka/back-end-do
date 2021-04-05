@@ -194,6 +194,7 @@ class OPcontrol:
             }
             li.append(dic_tmp)
             #dic.setdefault(pageNumber, dic_tmp)
+        print(li)
         dic.setdefault("titles",li)
         return dic
 
