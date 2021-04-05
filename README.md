@@ -1,370 +1,120 @@
 # back-end-do
 
-这是一个我家可爱的喵子做的后端计算机复习题小程序的后端，Python3.5以上版本均可以使用（自己用3.7在公司测试用3.8都可以）
+这是一个给女朋友毕业设计的后端计算机复习题小程序的后端，Python3.5以上版本均可以使用（自己用3.7在公司测试用3.8都可以），采用API传递JSON的方式进行连接管理，用到了MYSQL，session等常用技术。
 
 ~~采用我也不知道什么的架构（雾）~~
 
-主要分为【数据库操作】【控制层】【API接口】三大部分
+主要的逻辑部分 分为【Model】【Controller】【API】三层
+
+![mainBody](.\doc\pic\mainBody.png)
 
 如何使用本项目：
 
-1. 首先安装第三方库pip install -r requirements.txt 
+1. 终端环境下首先安装第三方库pip install -r requirements.txt 
 2. 导入sql文件（数据库使用mysql）
-3. python main.py运行（如果是Linux服务器需要使用nohup在后台启动程序）
+3. Windows运行run.cmd；Linux运行run.sh（Linux启动nohub会进行后台运行）
 
-项目介绍如下：
+项目整体结构架构如下：
 
-#### 一.数据库层
+![Architecture](.\doc\pic\Architecture.png)
 
-文件夹 models/下
+#### 一.Model - 数据库层
 
-已完成，主要是 连接 + 增删改查等基本功能，返回值，返回list给OPcontrol.py
+文件 models/DBconnect.py
 
-#### 二.控制层
+用来与MySQL的数据库进行交互，主要利用了pymysql模块连接数据库和datetime模块记录时间，内容就是基本的增删改查
 
-文件夹 control/下主要是OPcontrol.py文件，用来接受数据库层信息并且处理交给API接口模块
+- 增加数据
+- 删除数据
+- 修改数据
+- 查询数据
+- 特殊查询数据
 
-接受DBconnect.py传递进来的数据，经过处理，错误排除，返回给API模块，
 
-#### 三.API接口
 
-本地测试:http://127.0.0.1:5000/
+#### 二.Controller - 控制层
 
-外网测试将127.0.0.1地址修改为自己的IP地址即可，传递方式统统使用json方式
+文件 control/OPcontrol.py
 
-对下面的统一说明：sX,cX,tX分别表示 科目，章节，题目，X表示从1开始n的数量
+用来接受数据库层信息并且处理交给API接口模块，进行返回信息处理，数据库返回信息处理的中间控制层，接受传递数据，进行处理，错误排除，也是主要的逻辑管理层。
 
-------
+- 用户登录，注册，登出控制逻辑
+- 科目，章节，题目查询控制逻辑
+- 题目信息获取，提交，判断正确与否，等控制逻辑
+- 章节，题目增删改查等管理端控制逻辑
+- 管理端查看作答情况控制逻辑
 
-登陆：http://127.0.0.1:5000/login
 
-说明：登陆账户，会在后端生成一个session，将会使用session判断是否保持着登陆状态，注意默认方式是退出浏览器或者小程序就会清除这个session，也就需要重新登陆了，之后的所有功能相关的内容均需要使用到登陆状态判断。
 
-方法：POST
+#### 三.API - API接口层
 
-输入json
+详细API介绍可以查看doc文件中的两个API文档
 
-```json
-user_id - 用户登陆ID
-user_pwd - 用户登陆密码
-user_wx_id - 用户微信pid
-```
+文件为main.py，主要会调用启动session模块，日志模块，进行基本的route配置，进行基本的FLASK的配置选项等等配置启动，随后开始相应API访问响应。
 
-正常返回：
+（理论上主函数简洁一些比较好，可以考虑把route转而丢尽route文件夹中新建一个route.py这样，但不同系统之间会有一些区别，所以有的时候这样反而造成了一些路径错误出现，没有太多的时间排查就混在了一起）
 
-```json
-"user_id": user_id,
-"user_wx_id":user_wx_id,
-"success": "0"
-"success_info": "success login"
-```
+【笔者自己电脑编写用Windows，有时候在公司写了一下用macOS，而该代码的生产部署又在Linux】
 
-错误返回 - 会有错误代码 和 错误代码解释
+- 用户登录，注册，登出管理API
+- 科目，章节，题目查询API
+- 题目信息获取，提交API
+- 章节，题目增删改查等管理API
+- 管理端查看作答情况API
 
-------
+session技术是一个可以判断该用户是否存活的技术，一旦用户从浏览器退出了，就自动需要重新登陆）
 
-登陆检测：http://127.0.0.1:5000/checklogin
 
-说明：判断账户是否处于已登陆状态（应该没有前端主动用到的机会，测试可以用的端口）
 
-方法：GET，POST
+### 四.log - 日志管理模块
 
-正常返回：
+文件Log/loguti2.py
 
-```
-"success": “3”,
-"success_info": ”You are already login in.“,
-"info": user_id值
-```
+主要是对Logging的再封装，调用logging，loging.handlers日志句柄，以及系统函数os和时间函数time以进行创建和写入，以及自动创建以日期为目标的日志文件，日志分为四个等级【info】【debug】【warning】【error】越后越严重，进行记录
 
-错误返回 - 会有错误代码 和 错误代码解释
 
-------
 
-登出检测：http://127.0.0.1:5000/logout
+### 五.其他文件
 
-说明：让账户登出，不过又session机制，这个登出应该也没啥必要，该API后端主要也就是把对应的session删除解除登陆状态了。
+run.cmd / run.sh 运行文件，直接在系统中执行即可
 
-方法：POST
+requirements.txt 第三方库的配置安装文件
 
-输入json
+doc/ 文档文件，包含说明文档，截图，API接口介绍等等
 
-```json
-user_id - 用户登陆ID
-```
 
-正常返回：
 
-```json
-"user_id": user_id,
-"success": "1",
-"success_info": "success log out"
-```
+### 附录 1 - 正确码及其含义
 
-错误返回 - 会有错误代码 和 错误代码解释
+| successCode | 成功详细信息                         | 含义                           |
+| ----------- | ------------------------------------ | ------------------------------ |
+| 0           | success login                        | 成功登陆                       |
+| 1           | success log out                      | 成功登出                       |
+| 2           | success register new account         | 成功注册新账号                 |
+| 3           | You are already login in.            | 你已经登陆了                   |
+| 4           | success get subject                  | 成功获取科目                   |
+| 5           | success get chapter                  | 成功获取章节                   |
+| 6           | success get title                    | 成功获取题目                   |
+| 7           | success, but answer is wrong         | 成功提交，但是你的回答错误了   |
+| 8           | success, and answer is right         | 成功提交，并且你的回答是正确的 |
+| 9           | success daily attendance             | 成功每日签到（已作废）         |
+| 10          | success create or update new title   | 成功创建或者修改新的题目       |
+| 11          | success create or update new chapter | 成功创建或者修改新的章节       |
+| 12          | success remove title                 | 成功删除题目                   |
+| 13          | success remove chapter               | 成功删除章节                   |
 
-------
+### 附录 2 - 错误码及其含义
 
-创建新账号：http://127.0.0.1:5000/register
-
-说明：因为是使用微信小程序作为账户的，所以很多人喜欢更加快速的注册，因此就默认只需要输入微信账号，再由计算机自动生成user_id以及相关的密码，名称等基本信息，过后写一个修改账户信息的接口即可
-
-默认
-
-```json
-user_id - 随机生成
-user_name - 同 user_id
-user_pwd - 默认123456
-```
-
-方法：POST
-
-输入json
-
-```json
-user_wx_id - 用户微信ID
-```
-
-正常返回：
-
-```json
-"user_id": user_id, 		#随机生成的8位ID
-"user_name":user_name, 		#同user_id
-"user_pwd":user_pwd,		#用户密码，默认是123456
-"user_wx_id":user_wx_id,	#wechat - ID
-"user_accuracy":user_accuracy,	#正确率，默认是0，自动生成
-"success": "2",
-"success_info":"success register new account"
-```
-
-错误返回 - 会有错误代码 和 错误代码解释
-
-------
-
-直接获取全部章节信息（不常用API）：http://127.0.0.1:5000/getChaptersall
-
-说明：（前提条件 - 已登陆），获取当前数据库中存在的全部章节内容，主要有四个大模块《数据结构》，《操作系统》，《计算机组成原理》，《计算机网络》，返回三种状态码及一个中文标题，分别为章节序数以及书本从属，以及章节序和丛书合成出的一个唯一编码ID，中文就是章节名称
-
-方法：POST，GET
-
-正常返回：
-
-```json
-全部章节信息，
-success：”4“
-success_info：”success get chapter“
-```
-
-例：
-
-```json
-{
-    "c1": {
-        "chapters_id": "1",
-        "subject_id": "1",
-        "chapters_name": "数据结构导论"
-    },
-    "c2": {
-        "chapters_id": "1",
-        "subject_id": "2",
-        "chapters_name": "操作系统的发展史"
-    },
-    "c3": {
-        "chapters_id": "1",
-        "subject_id": "3",
-        "chapters_name": "计算机网络导论"
-    },
-    "c4": {
-        "chapters_id": "1",
-        "subject_id": "4",
-        "chapters_name": "计算机组成原理基础"
-    },
-    "success": "5",
-    "success_info": "success get chapter"
-}
-```
-
-错误返回 - 会有错误代码 和 错误代码解释，主要错误来自于不登陆访问该接口
-
-------
-
-获取科目信息：http://127.0.0.1:5000/getsubject
-
-说明：返回408该考的科目，可以自行添加，但是默认就是这几个，不设定科目添加接口，返回基本上是固定值，参考”正常返回“
-
-方法：POST，GET
-
-正常返回：
-
-```json
-{
-    "s1": {
-        "subject_id": "1",
-        "subject_name": "数据结构与算法",
-        "subject_brief": "数据结构是计算机存储、组织数据的方式。数据结构是指相互之间存在一种或多种特定关系的数据元素的集合。通常情况下，精心选择的数据结构可以带来更高的运行或者存储效率。数据结构往往同高效的检索算法和索引技术有关。"
-    },
-    "s2": {
-        "subject_id": "2",
-        "subject_name": "操作系统",
-        "subject_brief": "操作系统（operation system，简称OS）是管理计算机硬件与软件资源的计算机程序。操作系统需要处理如管理与配置内存、决定系统资源供需的优先次序、控制输入设备与输出设备、操作网络与管理文件系统等基本事务。操作系统也提供一个让用户与系统交互的操作界面。"
-    },
-    "s3": {
-        "subject_id": "3",
-        "subject_name": "计算机网络",
-        "subject_brief": "计算机网络是指将地理位置不同的具有独立功能的多台计算机及其外部设备，通过通信线路连接起来，在网络操作系统，网络管理软件及网络通信协议的管理和协调下，实现资源共享和信息传递的计算机系统。"
-    },
-    "s4": {
-        "subject_id": "4",
-        "subject_name": "计算机组成原理",
-        "subject_brief": "计算机组成原理介绍了计算机的基本组成原理和内部工作机制。主要内容分成两个部分：介绍计算机的基础知识；介绍计算机的各子系统（包括运算器、存储器、控制器、外部设备和输入输出子系统等）的基本组成原理、设计方法、相互关系以及各子系统互相连接构成整机系统的技术。"
-    },
-    "success": "4",
-    "success_info": "success get subject"
-}
-```
-
-错误返回 - 会有错误代码 和 错误代码解释，主要错误来自于不登陆访问该接口
-
-------
-
-获取章节信息（这才是常用API）：http://127.0.0.1:5000/getchapterfromsub
-
-说明：输入需要访问的科目编号subject_id，返回相应的章节编号
-
-方法：POST，GET
-
-输入json
-
-```
-"subject_id": 1   #1处替换为subjectId号，subjectId号可以由API：getsubject获取
-```
-
-正常返回：
-
-```
-{
-    "c1": {			#根据具体查询到多少题目返回诺干的cX的结构
-        "chapters_id": "1",
-        "subject_id": "1",
-        "chapters_name": "数据结构导论"
-    },
-    "success": "5",
-    "success_info": "success get chapter"
-}
-```
-
-错误返回 - 会有错误代码 和 错误代码解释，主要错误来自于不登陆访问该接口
-
-------
-
-获取题目标题信息：http://127.0.0.1:5000/gettitlefromchp
-
-说明：输入需要访问的章节编号chapters_id，返回相应的题目编号，注意只是返回题目编号，并不返回题目的详细信息信息，与题目信息一并返回的消息API请看后续更新
-
-方法：POST，GET
-
-输入json
-
-```json
-"chapters_id": 1   #输入需要查询的chapters_id，chapters_id可以由API：getchapterfromsub获取
-```
-
-正常返回：
-
-```json
-{
-    "t1": {				#根据具体查询到多少题目返回诺干的tX的结构
-        "title_id": "1",
-        "chapters_id": "2"
-    },
-    "t2": {
-        "title_id": "3",
-        "chapters_id": "2"
-    },
-    "success": "6",
-    "success_info": "success get title"
-}
-```
-
-错误返回 - 会有错误代码 和 错误代码解释，主要错误来自于不登陆访问该接口
-
-------
-
-获取题目详细信息：http://127.0.0.1:5000/gettitleinfo
-
-说明：输入需要访问的章节编号title_id，返回相应的题目编号的题目详细内容，返回值主要的解释为：\#  title_id:  输入的titleid 
-
-- titleHead:  题目的标题
-- titleCont: 题目的内容
-- titleAnswer:  题目的答案（选择填空混合）
-- titleAnalysis: 题目的解析
-- titleAveracc:  题目的平均正确率
-- titlespaper:  题目来自的试卷
-- specialNote:  特殊注解（一般没有为None）
-
-方法：POST
-
-输入json
-
-```json
-"title_id": 1   #输入需要查询的title_id，title_id可以由API：gettitlefromchp获取
-```
-
-正常返回：
-
-```json
-{
-    't1': {
-        'title_id': '2', 
-        'titleHead': '填空题',
-        'titleCont': '导弹系统是属于_______系统', 
-        'titleAnswer': '硬时系统', 
-        'titleAnalysis': '这是一个解析', 
-        'titleAveracc': '89', 
-        'titlespaper': 2017, 
-        'specialNote': None
-    }, 
- 	'success': '6', 
-    'success_info': 'success get title'
-}
-```
-
-错误返回 - 会有错误代码 和 错误代码解释，主要错误来自于不登陆访问该接口
-
-------
-
-随机获取题目详细信息：http://127.0.0.1:5000/gettitleinfo
-
-说明：无需输入，直接获取一道题目（有可能是已经做过的题目），同时返回相应的题目编号的题目详细内容，内容完全同上一条API介绍
-
-------
-
-提交题目回答：http://127.0.0.1:5000/submitanswer
-
-说明：输入一个题目的回答，会返回正确与否，将会在后台多个表中记录数据，以便后台访问
-
-方法：POST
-
-输入json
-
-分别是title_id所需要提交题目的ID号，user_id所需要提交题目的用户，answer用户的回答（直接匹配字符串，ABCD，或者填空题答案），user_note用户自己的笔记
-
-```json
-{
-    "title_id": string，
-    "user_id": string，
-    "answer": string，
-    "user_note": string
-}
-```
-
-正常返回，有两种，分别是回答正确返回代码 8，回答错误返回代码 7 ：
-
-```json
-{
-	"success": successCode,
-    "success_info": successCodeinfo,
-}
-```
-
-错误返回 - 会有错误代码 和 错误代码解释，主要错误来自于不登陆访问该接口
+| errorCode | 详细错误信息                                                 | 含义                                                         |
+| --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 0         | You should use POST                                          | 你需要使用POST（检查一下是否使用了GET）                      |
+| 1         | Can not get information, please recheck the input            | 无法获取信息，错误原因很多，很有可能是传输失败了             |
+| 2         | Wrong password or something else                             | 错误的用户名密码，登陆出错了                                 |
+| 3         | can not register new account, please recheck.                | 你无法注册一个新账号，请重试                                 |
+| 4         | You are not login in.                                        | 你还没有登陆呢                                               |
+| 5         | Missing the necessary incoming parameters                    | 缺少必要的传入参数                                           |
+| 6         | you are not administrator.                                   | 你不是管理员，请确认管理员账户，如果需要提升为管理员，请联系后台管理提升权限 |
+| 7         | failed to insert new title. please recheck the title_id is repeated. | 失败插入新题目，请重新插入                                   |
+| 8         | failed to insert new chapter. please recheck the chapters_id is repeated. | 失败插入新章节，请重新插入                                   |
+| 9         | failed to remove title from title_id, plz rechack"           | 失败删除记录通过title_id，请重试                             |
+| 10        | failed to remove chapter from chapters_id, plz recheck       | 失败删除记录通过chapters_id，请重试                          |
