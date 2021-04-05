@@ -138,15 +138,19 @@ class OPcontrol:
         db = DBconnect.DBconnect()
         info = db.dbQuery(dbTable)
         dic = {}
+        li = []
         for i in range(0, len(info)):
             # 题目编号我不希望从0开始
             pageNumber = "c" + str(i+1)
             dic_tmp = {
+                "group": pageNumber,
                 "chapters_id": info[i][0],    # 章节编号
                 "subject_id": info[i][1],  # 属于哪本书的编号
                 "chapters_name": info[i][2]   # 该章节中文名称
             }
-            dic.setdefault(pageNumber, dic_tmp)
+            li.append(dic_tmp)
+        dic.setdefault("chapters", li)
+        #dic.setdefault(pageNumber, dic_tmp)
         return dic
 
     # 重要 - 管理端需要使用此内容
@@ -160,6 +164,7 @@ class OPcontrol:
         db = DBconnect.DBconnect()
         info = db.dbQuery(dbTable)
         dic = {}
+        li = []
         for i in range(0, len(info)):
             # 题目编号我不希望从0开始
             pageNumber = "t" + str(i+1)
@@ -175,6 +180,7 @@ class OPcontrol:
             print(subject_id)
 
             dic_tmp = {
+                "group": pageNumber,
                 "title_id": title_id,        # 题目ID
                 "chapters_id": chapter_id,    # 章节ID
                 "subject_id": subject_id,     # 科目ID
@@ -186,7 +192,9 @@ class OPcontrol:
                 "titlespaper": info[i][6],    # 题目出处
                 "specialNote": info[i][7],    # 特殊注解
             }
-            dic.setdefault(pageNumber, dic_tmp)
+            li.append(dic_tmp)
+            #dic.setdefault(pageNumber, dic_tmp)
+        dic.setdefault("titles",li)
         return dic
 
     def get_subject(self):
@@ -484,8 +492,6 @@ class OPcontrol:
             return True
         else:
             return False
-    
-
 
     def remove_title(self, title_id):
         """
@@ -493,7 +499,7 @@ class OPcontrol:
         """
         dbTable = "title_info"
         needName = "titleId"
-        #print("2222222222222================")
+        # print("2222222222222================")
         db = DBconnect.DBconnect()
         is_OK = db.dbDelete(
             dbTable, needName, title_id)
