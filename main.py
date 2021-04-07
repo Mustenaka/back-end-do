@@ -5,6 +5,7 @@ from flask import session
 from flask import redirect
 from flask import url_for
 from flask import escape
+from flask_cors import CORS
 
 import os
 import sys
@@ -237,6 +238,14 @@ def Register_():
         })
 
 
+##################################################
+##################################################
+##################-后台API-#######################
+##################################################
+##################################################
+##################################################
+
+
 # 获取全部章节
 @app.route('/getChaptersall', methods=['GET', 'POST'])
 def get_chapter_all():
@@ -246,16 +255,14 @@ def get_chapter_all():
 
     Returns:
         返回数据库中全部的章节信息
+    
+    Update:
+        前端使用cookie，后端取消session验证
+
     """
     # GET请求 和 POST请求都可以
     try:
         # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
-        user = session.get('user_id')
-        if not user:
-            return jsonify({
-                "error": config.errorCode[4],
-                "error_info": config.errorCodeinfo[4]
-            })
         op = OPcontrol.OPcontrol()
         get_dic = op.get_chapter_all()
         get_dic.setdefault("success", config.successCode[5])
@@ -279,16 +286,13 @@ def get_title_all():
 
     Returns:
         返回数据库中全部的题目信息
+    
+    Update:
+        前端使用cookie，后端取消session验证
     """
     # GET请求 和 POST请求都可以
     try:
         # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
-        user = session.get('user_id')
-        if not user:
-            return jsonify({
-                "error": config.errorCode[4],
-                "error_info": config.errorCodeinfo[4]
-            })
         op = OPcontrol.OPcontrol()
         get_dic = op.get_title_all()
         get_dic.setdefault("success", config.successCode[6])
@@ -327,16 +331,13 @@ def set_new_chapter():
             原因2.缺少内容
             原因3.使用GET请求
             原因4.传输过程有误
+    
+    Update:
+        前端使用cookie，后端取消session验证
+
     """
     if request.method == 'POST':
         try:
-            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
-            user = session.get('user_id')
-            if not user:
-                return jsonify({
-                    "error": config.errorCode[4],
-                    "error_info": config.errorCodeinfo[4]
-                })
             # 输入筛查
             user_id = str(request.json.get('user_id'))
             subject_id = str(request.json.get('subject_id'))
@@ -414,16 +415,13 @@ def set_new_title():
             原因2.缺少内容
             原因3.使用GET请求
             原因4.传输过程有误
+    
+    Update:
+        前端使用cookie，后端取消session验证
+
     """
     if request.method == 'POST':
         try:
-            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
-            user = session.get('user_id')
-            if not user:
-                return jsonify({
-                    "error": config.errorCode[4],
-                    "error_info": config.errorCodeinfo[4]
-                })
             # 输入筛查
             user_id = str(request.json.get('user_id'))
             title_id = str(request.json.get('title_id'))
@@ -504,16 +502,12 @@ def update_title():
             原因2.缺少内容
             原因3.使用GET请求
             原因4.传输过程有误
+
+    Update:
+        前端使用cookie，后端取消session验证
     """
     if request.method == 'POST':
         try:
-            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
-            user = session.get('user_id')
-            if not user:
-                return jsonify({
-                    "error": config.errorCode[4],
-                    "error_info": config.errorCodeinfo[4]
-                })
             # 输入筛查
             user_id = str(request.json.get('user_id'))
             title_id = str(request.json.get('title_id'))
@@ -588,16 +582,12 @@ def remove_title():
             原因2.缺少内容
             原因3.使用GET请求
             原因4.传输过程有误
+
+    Update:
+        前端使用cookie，后端取消session验证
     """
     if request.method == 'POST':
         try:
-            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
-            user = session.get('user_id')
-            if not user:
-                return jsonify({
-                    "error": config.errorCode[4],
-                    "error_info": config.errorCodeinfo[4]
-                })
             # 输入筛查
             user_id = str(request.json.get('user_id'))
             title_id = str(request.json.get('title_id'))
@@ -657,16 +647,12 @@ def remove_chapter():
             原因2.缺少内容
             原因3.使用GET请求
             原因4.传输过程有误
+
+    Update:
+        前端使用cookie，后端取消session验证
     """
     if request.method == 'POST':
         try:
-            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
-            user = session.get('user_id')
-            if not user:
-                return jsonify({
-                    "error": config.errorCode[4],
-                    "error_info": config.errorCodeinfo[4]
-                })
             # 输入筛查
             user_id = str(request.json.get('user_id'))
             chapters_id = str(request.json.get('chapters_id'))
@@ -704,6 +690,13 @@ def remove_chapter():
             "error": config.errorCode[0],
             "error_info": config.errorCodeinfo[0]
         })
+
+##################################################
+##################################################
+##################################################
+##################################################
+##################################################
+##################################################
 
 
 # 获取全部科目信息
@@ -996,6 +989,8 @@ def submit_answer():
 def get_PersonalSignin(test):
     """
     代码好像不知道在哪里被give up了
+    Update:
+        作废此API，微信自带签到接口
     """
     pass
 
