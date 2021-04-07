@@ -712,12 +712,6 @@ def get_subject():
     # GET请求 和 POST请求都可以
     try:
         # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
-        user = session.get('user_id')
-        if not user:
-            return jsonify({
-                "error": config.errorCode[4],
-                "error_info": config.errorCodeinfo[4]
-            })
         op = OPcontrol.OPcontrol()
         get_dic = op.get_subject()
         get_dic.setdefault("success", config.successCode[4])
@@ -747,13 +741,6 @@ def get_chapters_from_sub():
     """
     if request.method == 'POST':
         try:
-            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
-            user = session.get('user_id')
-            if not user:
-                return jsonify({
-                    "error": config.errorCode[4],
-                    "error_info": config.errorCodeinfo[4]
-                })
             # 输入筛查
             sub_id = str(request.json.get('subject_id'))
             if sub_id == "":
@@ -795,13 +782,6 @@ def get_title_from_chp():
     """
     if request.method == 'POST':
         try:
-            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
-            user = session.get('user_id')
-            if not user:
-                return jsonify({
-                    "error": config.errorCode[4],
-                    "error_info": config.errorCodeinfo[4]
-                })
             # 输入筛查
             chp_id = str(request.json.get('chapters_id'))
             if chp_id == "":
@@ -849,13 +829,6 @@ def get_titleInfo():
     """
     if request.method == 'POST':
         try:
-            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
-            user = session.get('user_id')
-            if not user:
-                return jsonify({
-                    "error": config.errorCode[4],
-                    "error_info": config.errorCodeinfo[4]
-                })
             # 输入筛查
             tit_id = str(request.json.get('title_id'))
             # 验证账户密码正确性
@@ -886,14 +859,6 @@ def get_randomTitleInfo():
     """
     if request.method == 'POST':
         try:
-            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
-            user = session.get('user_id')
-            if not user:
-                return jsonify({
-                    "error": config.errorCode[4],
-                    "error_info": config.errorCodeinfo[4]
-                })
-
             # 验证账户密码正确性 - 先获取长度，再随机生成
             op = OPcontrol.OPcontrol()
             table_length = op.get_title_len()
@@ -942,13 +907,6 @@ def submit_answer():
     """
     if request.method == 'POST':
         try:
-            # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
-            user = session.get('user_id')
-            if not user:
-                return jsonify({
-                    "error": config.errorCode[4],
-                    "error_info": config.errorCodeinfo[4]
-                })
             # 输入筛查
             tit_id = str(request.json.get('title_id'))
             user_id = str(request.json.get('user_id'))
