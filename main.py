@@ -20,6 +20,7 @@ import Log.logutil2 as log
 from control.Msession import MySessionInterface
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 app.config['JSON_SORT_KEYS'] = False
 
 # session
