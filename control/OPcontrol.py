@@ -508,7 +508,7 @@ class OPcontrol:
         Update:
             删除题目表的同时titlenumber_info的表对应的内容
         """
-        dbTable = "title_info"
+        dbTable = "titlenumber_info"
         needName = "titleId"
 
         db = DBconnect.DBconnect()

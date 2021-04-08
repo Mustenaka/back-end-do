@@ -695,7 +695,7 @@ def remove_chapter():
 
 # 获取答题记录
 @app.route('/getanswerrecord', methods=['GET', 'POST'])
-def remove_chapter():
+def get_answerrecord():
     pass
 
 
