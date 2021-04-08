@@ -67,8 +67,6 @@ class OPcontrol:
         else:
             return True
 
-    # 等待重构 - ❌
-
     def register(self, user_name, user_pwd):
         """
         创建一个新用户, 通过传递进来的用户名和密码注册。
@@ -195,7 +193,7 @@ class OPcontrol:
             li.append(dic_tmp)
             #dic.setdefault(pageNumber, dic_tmp)
         print(li)
-        dic.setdefault("titles",li)
+        dic.setdefault("titles", li)
         return dic
 
     def get_subject(self):
@@ -210,14 +208,17 @@ class OPcontrol:
         db = DBconnect.DBconnect()
         info = db.dbQuery(dbTable)
         dic = {}
+        li = []
         for i in range(0, len(info)):
             pageNumber = "s" + str(i+1)
             dic_tmp = {
+                "group": pageNumber,
                 "subject_id": info[i][0],    # 书本<科目>编号
                 "subject_name": info[i][1],  # 书本<科目>名称
                 "subject_brief": info[i][2]   # 书本<科目>介绍
             }
-            dic.setdefault(pageNumber, dic_tmp)
+            li.append(dic_tmp)
+        dic.setdefault("subjects", li)
         return dic
 
     def get_chapter(self, sub_id):
@@ -234,14 +235,17 @@ class OPcontrol:
         db = DBconnect.DBconnect()
         info = db.dbQuery_chapter_according_to_subject(str(sub_id))
         dic = {}
+        li = []
         for i in range(0, len(info)):
             pageNumber = "c" + str(i+1)
             dic_tmp = {
+                "group": pageNumber,
                 "chapters_id": info[i][0],    # 章节编号
                 "subject_id": info[i][1],    # 科目编号
                 "chapters_name": info[i][2]   # 该章节中文名称
             }
-            dic.setdefault(pageNumber, dic_tmp)
+            li.append(dic_tmp)
+        dic.setdefault("chapters", li)
         return dic
 
     def get_title(self, chp_id):
@@ -258,13 +262,16 @@ class OPcontrol:
         db = DBconnect.DBconnect()
         info = db.dbQuery_title_according_to_chapter(str(chp_id))
         dic = {}
+        li = []
         for i in range(0, len(info)):
             pageNumber = "t" + str(i+1)
             dic_tmp = {
+                "group":pageNumber,
                 "title_id": info[i][0],    # 题目ID
                 "chapters_id": info[i][1],  # 章节ID
             }
-            dic.setdefault(pageNumber, dic_tmp)
+            li.append(dic_tmp)
+        dic.setdefault("titles", li)
         return dic
 
     # 根据题目获得详细信息
@@ -497,11 +504,15 @@ class OPcontrol:
     def remove_title(self, title_id):
         """
         输入一个title_id标题ID，删除数据库表中title_info表对应的内容
+
+        Update:
+            删除题目表的同时titlenumber_info的表对应的内容
         """
         dbTable = "title_info"
         needName = "titleId"
-        # print("2222222222222================")
+
         db = DBconnect.DBconnect()
+        # 删除题目表
         is_OK = db.dbDelete(
             dbTable, needName, title_id)
         print(is_OK)
@@ -510,12 +521,17 @@ class OPcontrol:
     def remove_chapter(self, chapter_id):
         """
         输入一个chapter_id 章节ID，删除数据库中章节表中对应的内容
+
+        Update:
+            删除章节表的同时删除titlenumber_info的表对应的内容
+            删除章节表的同时删除title_info表中对应的内容
         """
         dbTable = "chapters_info"
         needName = "chaptersId"
         db = DBconnect.DBconnect()
         is_OK = db.dbDelete(
             dbTable, needName, chapter_id)
+        
         return is_OK
 
 

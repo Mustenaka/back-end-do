@@ -691,6 +691,16 @@ def remove_chapter():
             "error_info": config.errorCodeinfo[0]
         })
 
+
+
+# 获取答题记录
+@app.route('/getanswerrecord', methods=['GET', 'POST'])
+def remove_chapter():
+    pass
+
+
+
+
 ##################################################
 ##################################################
 ##################################################
