@@ -518,6 +518,7 @@ class OPcontrol:
         print(is_OK)
         return is_OK
 
+
     def remove_chapter(self, chapter_id):
         """
         输入一个chapter_id 章节ID，删除数据库中章节表中对应的内容
@@ -534,6 +535,85 @@ class OPcontrol:
         
         return is_OK
 
+
+    def get_answerRecord_all(self):
+        """
+        给管理员端获取的答题记录信息，一次性获取所有的章节表内容，
+        这是一个不可以更改的信息表，为了确认答题的记录
+        
+        一次性全部获取方便做管理端的插入表格
+        """
+        dbTable = "titlenote_info"
+        db = DBconnect.DBconnect()
+        info = db.dbQuery(dbTable)
+        dic = {}
+        li = []
+        for i in range(0, len(info)):
+            # 题目编号我不希望从0开始
+            pageNumber = "r" + str(i+1)
+            dic_tmp = {
+                "group": pageNumber,
+                "user_id": info[i][0],    # 用户ID
+                "title_id": info[i][1],   # 题目ID
+                "is_right": info[i][2],   # 是否回答正确
+                "respontime": info[i][3], # 回答时间
+                "personNote": info[i][4]  # 个人记录
+            }
+            li.append(dic_tmp)
+        dic.setdefault("chapters", li)
+        #dic.setdefault(pageNumber, dic_tmp)
+        return dic
+
+
+
+    def update_user_info(self, user_id, user_name, user_pwd, isAdministrator):
+        """
+        更新用户信息，输入用户ID作为索引
+        可以修改的信息有，user_name用户名，user_pwd用户密码，is_admin是管理员么？
+        
+        @param user_id  用户id
+        @param user_name   用户名
+        @param user_pwd    用户密码
+        @param isAdministrator  是否是管理员
+
+        @return
+            返回一个字典，其中包含一个returnCode，当他等于a0的时候表示获取正确信息，返回r0的时候表示获取信息失败
+            同时返回的字典还会有基本的查询信息。
+        """
+        db = DBconnect.DBconnect()
+
+        # 插入数据库
+        if isAdministrator == "0" or isAdministrator == "1":
+            is_successful = db.dbUpdate_user_infomation(
+                user_id, user_name, user_pwd, isAdministrator
+            )
+        else:
+            is_successful = db.dbUpdate_user_infomation(
+                user_id, user_name, user_pwd
+            )
+        print(is_successful)
+        is_admin = db.dbQuery_is_administrator(user_id)
+        
+        if not is_admin:
+            isAdministrator = 0
+        if is_admin[0][0] != 0:
+            isAdministrator = 1
+        elif is_admin[0][0] == 0:
+            isAdministrator = 0
+
+        if is_successful:
+            dic = {
+                "returnCode": "a0",
+                "user_id": user_id,
+                "user_name": user_name,
+                "user_pwd": user_pwd,
+                "isAdministrator": isAdministrator
+            }
+        else:
+            dic = {
+                "returnCode": "r0"
+            }
+        return dic
 
 if __name__ == '__main__':
     op = OPcontrol()
