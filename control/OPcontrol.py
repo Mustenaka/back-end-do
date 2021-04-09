@@ -560,7 +560,7 @@ class OPcontrol:
                 "personNote": info[i][4]  # 个人记录
             }
             li.append(dic_tmp)
-        dic.setdefault("chapters", li)
+        dic.setdefault("answer_record", li)
         #dic.setdefault(pageNumber, dic_tmp)
         return dic
 
