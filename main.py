@@ -88,7 +88,7 @@ def miaozi_hello():
     })
 
 
-# 登陆 - 待重写
+# 登陆 
 @app.route('/login', methods=['GET', 'POST'])
 def Login_():
     """
@@ -236,6 +236,70 @@ def Register_():
             "error": config.errorCode[0],
             "error_info": config.errorCodeinfo[0]
         })
+
+
+
+# 修改用户信息（用户名，密码，是否是管理员）
+@app.route('/modification', methods=['GET', 'POST'])
+def modification_():
+    """
+    修改用户信息
+    可以修改，用户名，密码，是否提升管理员权限。
+
+    @return
+        user_id 用户ID
+        user_name 修改后的用户名
+        user_pwd 修改后的用户密码
+        isAdministrator 是否是管理员，如果你输入了这个参数，
+                        则返回修改后的效果，如果没有输入，则返回原来这个账号是不是管理员
+    """
+    if request.method == 'POST':
+        try:
+            # 传递进来用户名和密码
+            user_id = str(request.json.get('user_id'))
+            user_name = str(request.json.get('user_name'))
+            user_pwd = str(request.json.get('user_pwd'))
+            isAdministrator = str(request.json.get('isAdministrator'))
+            print(user_id, user_name, user_pwd, isAdministrator)
+
+            op = OPcontrol.OPcontrol()
+            returnDic = op.update_user_info(user_id, user_name, user_pwd, isAdministrator)
+            print(returnDic)
+            if returnDic['returnCode'] == "a0":
+                return jsonify({
+                    "user_id": returnDic['user_id'],
+                    "user_name": returnDic['user_name'],
+                    "user_pwd": returnDic['user_pwd'],
+                    "isAdministrator": returnDic['isAdministrator'],
+                    "success": config.successCode[15],
+                    "success_info": config.successCodeinfo[15]
+                })
+            elif returnDic['returnCode'] == "r0":
+                return jsonify({
+                    "error": config.errorCode[11],
+                    "error_info": config.errorCodeinfo[11]
+                })
+        except Exception as e:
+            logger.error(e)
+            return jsonify({
+                "error": config.errorCode[1],
+                "error_info": config.errorCodeinfo[1]
+            })
+    else:
+        return jsonify({
+            "error": config.errorCode[0],
+            "error_info": config.errorCodeinfo[0]
+        })
+
+
+
+
+
+
+
+
+
+
 
 
 ##################################################
@@ -696,7 +760,29 @@ def remove_chapter():
 # 获取答题记录
 @app.route('/getanswerrecord', methods=['GET', 'POST'])
 def get_answerrecord():
-    pass
+    """
+    获取全部的答题记录信息，管理员查询用API
+    API: http://localhost/getanswerrecord
+
+    Returns:
+        返回数据库中全部的答题记录信息
+    
+    """
+    # GET请求 和 POST请求都可以
+    try:
+        # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
+        op = OPcontrol.OPcontrol()
+        get_dic = op.get_answerRecord_all()
+        get_dic.setdefault("success", config.successCode[14])
+        get_dic.setdefault("success_info", config.successCodeinfo[14])
+        print(get_dic)
+        return jsonify(get_dic)
+        # return jsonify(json.dumps(get_dic,f, indent = 4, separators = (',', ': ')))
+    except:
+        return jsonify({
+            "error": config.errorCode[1],
+            "error_info": config.errorCodeinfo[1]
+        })
 
 
 
