@@ -373,6 +373,32 @@ class DBconnect:
             print("操作异常：%s" % str(e))
             # 错误回滚
             conn.rollback()
+    
+    # 更新用户信息
+    def dbUpdate_user_infomation(self, user_id, user_name, user_pwd, isAdministrator=None):
+        """
+        修改用户名，密码，管理员权限
+        """
+        conn = self.conn
+        cur = self.cur
+        print(isAdministrator)
+        if isAdministrator == "" or isAdministrator == None:
+            # 仅修改用户名密码
+            sql = "update HHM.user_info set userName='"+user_name+"',userPwd='"+user_pwd+"' where userId='"+user_id+"'"
+        else:
+            # 修改用户名密码同时修改管理员权限
+            sql = "update HHM.user_info set userName='"+user_name+"',userPwd='"+user_pwd+"',isAdministrator='"+isAdministrator+"' where userId='"+user_id+"'"
+        print(sql)       
+        try:
+            cur.execute(sql)
+            conn.commit()
+            return True
+        except Exception as e:
+            print("操作异常：%s" % str(e))
+            # 错误回滚
+            conn.rollback()
+            return False
+            
 
     def dbUpdate_title_info(self, title_id, titleAveracc, titleRight, titleWrong):
         """
