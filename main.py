@@ -1006,9 +1006,10 @@ def submit_answer():
             # 输入筛查
             tit_id = str(request.json.get('title_id'))
             user_id = str(request.json.get('user_id'))
-            answer = str(request.json.get('answer'))
+            answer = str(request.json.get('answer')).upper()
             user_note = str(request.json.get('user_note'))
 
+            logger.debug(answer)
             # 调用answerCorrectJudgment获取正确与否
             op = OPcontrol.OPcontrol()
 
