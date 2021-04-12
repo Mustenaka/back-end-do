@@ -21,43 +21,28 @@ import Log.logutil2 as log
 from control.Msession import MySessionInterface
 
 def modification_():
-    """
-    修改用户信息
-    可以修改，用户名，密码，是否提升管理员权限。
+    # 输入筛查
+    tit_id = "1"
+    user_id = "1000003"
+    answer = "B"
+    user_note = "None"
 
-    """
-    try:
-        # 传递进来用户名和密码
-        user_id = "28283029"
-        user_name = "lyb"
-        user_pwd = "123123"
-        isAdministrator = ""
-        print(user_id, user_name, user_pwd, isAdministrator)
+    # 调用answerCorrectJudgment获取正确与否
+    op = OPcontrol.OPcontrol()
 
-        op = OPcontrol.OPcontrol()
-        returnDic = op.update_user_info(user_id, user_name, user_pwd, isAdministrator)
-        print(returnDic)
-        if returnDic['returnCode'] == "a0":
-            return {
-                "user_id": returnDic['user_id'],
-                "user_name": returnDic['user_name'],
-                "user_pwd": returnDic['user_pwd'],
-                "isAdministrator": returnDic['isAdministrator'],
-                "success": config.successCode[15],
-                "success_info": config.successCodeinfo[15]
-            }
-        elif returnDic['returnCode'] == "r0":
-            return {
-                "error": config.errorCode[11],
-                "error_info": config.errorCodeinfo[11]
-            }
-    except Exception as e:
-        print(e)
+    isRight = op.answerCorrectJudgment(
+        user_id, tit_id, answer, user_note)
+    #7 - wrong ; 8 - right
+    if isRight:
         return {
-            "error": config.errorCode[1],
-            "error_info": config.errorCodeinfo[1]
+            "success": config.successCode[8],
+            "success_info": config.successCodeinfo[8],
         }
-
+    else:
+        return {
+            "success": config.successCode[7],
+            "success_info": config.successCodeinfo[7],
+        }
 
 
 if __name__ == '__main__':
