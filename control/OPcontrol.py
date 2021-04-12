@@ -379,8 +379,8 @@ class OPcontrol:
 
         # 生成平均正确率，并且将记录更新到题目表
         titleAveracc = (titleRight) / (titleRight + titleWrong)
-        db.dbUpdate_title_info(str(tit_id), titleAveracc,
-                               titleRight, titleWrong)
+        db.dbUpdate_title_info(str(tit_id), str(titleAveracc),
+                               str(titleRight), str(titleWrong))
 
         # 更新用户回答详细内容 - 记录题号和回答时间
         inputDataTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
