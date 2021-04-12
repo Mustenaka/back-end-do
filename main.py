@@ -773,8 +773,9 @@ def get_answerrecord():
         # 需要先判断一次登陆状态 - 确保已经登陆才可以获取信息
         op = OPcontrol.OPcontrol()
         get_dic = op.get_answerRecord_all()
-        get_dic.setdefault("success", config.successCode[14])
-        get_dic.setdefault("success_info", config.successCodeinfo[14])
+        #get_dic.setdefault("success", config.successCode[14])
+        #get_dic.setdefault("success_info", config.successCodeinfo[14])
+        logger.debug(type(get_dic))
         print(get_dic)
         return jsonify(get_dic)
         # return jsonify(json.dumps(get_dic,f, indent = 4, separators = (',', ': ')))
