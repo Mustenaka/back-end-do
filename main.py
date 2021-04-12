@@ -1046,7 +1046,9 @@ def get_PersonalSignin(test):
     Update:
         作废此API，微信自带签到接口
     """
-    pass
+    return jsonify({
+        "success":"success"
+    })
 
 
 if __name__ == '__main__':
