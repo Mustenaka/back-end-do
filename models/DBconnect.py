@@ -413,8 +413,8 @@ class DBconnect:
         """
         conn = self.conn
         cur = self.cur
-        sql = "update HHM.title_info set titleAveracc=" + titleAveracc + ",titleRight=" + \
-            titleRight + "titleWrong=" + titleWrong + " where titleId='" + title_id + "'"
+        sql = "update HHM.title_info set titleAveracc='" + titleAveracc + "',titleRight='" + \
+            titleRight + "',titleWrong='" + titleWrong + "' where titleId='" + title_id + "'"
         print(sql)
         try:
             cur.execute(sql)
